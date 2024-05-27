@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, View, StyleSheet, Dimensions } from "react-native";
 import CardInfo from "./card_info_contract";
+import { useDispatch } from 'react-redux';
+import { setContract } from "../../../utils/redux/actions/contractActions";
 
 interface CarouselInfoProps {
     data: any;
   }
+
 const Carousel: React.FC<CarouselInfoProps> = ({ data }) =>{
   const [activeIndex, setActiveIndex] = useState(0);
   const screenWidth = Dimensions.get("window").width;
+  const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    if (data.length > 0) {
+      setActiveIndex(0);
+      dispatch(setContract(data[0].id)); // Set the first contract when data changes
+    }
+  }, [data, dispatch]);
+
 
   const onScroll = (event: { nativeEvent: { layoutMeasurement: { width: any; }; contentOffset: { x: any; }; }; }) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;
@@ -15,6 +28,7 @@ const Carousel: React.FC<CarouselInfoProps> = ({ data }) =>{
     const index = Math.floor(contentOffsetX / slideSize);
     if (index !== activeIndex) {
       setActiveIndex(index);
+      dispatch(setContract(data[index].id)); // Set the active contract on scroll
       console.log(`Active Card ID: ${data[index].id}`);
     }
   };
@@ -77,6 +91,8 @@ const styles = StyleSheet.create({
   inactiveIndicator: {
     backgroundColor: '#90908F',
   },
+
+
 });
 
 export default Carousel;

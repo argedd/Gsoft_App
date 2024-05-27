@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { Text, StyleSheet, View, Image } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -7,6 +7,23 @@ interface CardInfoProps {
   data: any;
 }
 
+// Función para obtener la imagen según el estado
+const getStatusImage = (status: number) => {
+  switch (status) {
+    case 16:
+      return require("../../../assets/activo.png");
+    case 18:
+      return require("../../../assets/porInstalar.png");
+    case 19:
+      return require("../../../assets/suspendido.png");
+    case 20:
+      return require("../../../assets/pausado.png");
+    case 35:
+      return require("../../../assets/retirado.png");
+    // Agrega más casos según los estados que manejes
+  
+  }
+};
 const CardInfo: React.FC<CardInfoProps> = ({ data }) => {
   return (
     <LinearGradient
@@ -14,35 +31,27 @@ const CardInfo: React.FC<CardInfoProps> = ({ data }) => {
       locations={[0, 1]}
       colors={['rgba(255, 255, 255, 0.24)', 'rgba(153, 153, 153, 0.24)']}
     >
-      <View style={styles.frameParent}>
-        <View>
-          <View style={styles.frameParentFlexBox}>
-            <Text style={[styles.activo, styles.textTypo]}>{data.status_name}</Text>
-            <View style={styles.outerIndicator}>
-              <View style={styles.innerIndicator} />
-            </View>
-          </View>
+      <View >
+        <View style={styles.frameParentFlexBox}>
+          <Text style={[styles.activo, styles.textTypo]}>{data.status_name}</Text>
+          <Image source={getStatusImage(data.status)} style={styles.indicatorImage} />
         </View>
-        <View style={styles.frameGroup}>
-          <View style={[styles.frameContainer, styles.frameParentFlexBox]}>
-            <View>
-              <Text style={[styles.nContrato, styles.nContratoTypo]}>Nº Contrato:</Text>
-              <Text style={[styles.text, styles.textTypo]}>{data.id}</Text>
-            </View>
-            <View style={styles.mensualidadParent}>
-              <Text style={[styles.nContrato, styles.nContratoTypo]}>Mensualidad:</Text>
-              <Text style={[styles.text, styles.textTypo]}>150 Bs.</Text>
-            </View>
+        <View style={styles.gridContainer}>
+          <View style={styles.gridItem}>
+            <Text style={[styles.nContrato, styles.nContratoTypo]}>Nº Contrato:</Text>
+            <Text style={[styles.text, styles.textTypo]}>{data.id}</Text>
           </View>
-          <View style={[styles.frameView, styles.frameParentFlexBox]}>
-            <View style={styles.frameParent}>
-              <Text style={[styles.nContrato, styles.nContratoTypo]}>Fecha de pago:</Text>
-              <Text style={[styles.text, styles.textTypo]}>12/06</Text>
-            </View>
-            <View style={[styles.informacionDelCirculoDeArcParent, styles.frameParentFlexBox]}>
-              <MaterialCommunityIcons name='file-search-outline' size={24} color="#fff" />
-              <Text style={[styles.verDetalle, styles.nContratoTypo]}>Ver detalle</Text>
-            </View>
+          <View style={styles.gridItem}>
+            <Text style={[styles.nContrato, styles.nContratoTypo]}>Deuda:</Text>
+            <Text style={[styles.text, styles.textTypo]}>{data.debt}</Text>
+          </View>
+          <View style={styles.gridItem}>
+            <Text style={[styles.nContrato, styles.nContratoTypo]}>Fecha de pago:</Text>
+            <Text style={[styles.text, styles.textTypo]}>{data.date_cicle}</Text>
+          </View>
+          <View style={[styles.gridItem, styles.gridItemFlexBox]}>
+            <MaterialCommunityIcons name='file-search-outline' size={24} color="#fff" />
+            <Text style={[styles.verDetalle, styles.nContratoTypo]}>Ver detalle</Text>
           </View>
         </View>
       </View>
@@ -59,7 +68,8 @@ const styles = StyleSheet.create({
   },
   frameParentFlexBox: {
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    // justifyContent: "space-between",
   },
   nContratoTypo: {
     fontFamily: "Roboto-Regular",
@@ -76,32 +86,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10
   },
-  mensualidadParent: {
-    marginLeft: 38
+  gridContainer: {
+    marginTop: 24,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
-  frameContainer: {
-    justifyContent: "center"
+  gridItem: {
+    width: "48%",
+    marginBottom: 16,
   },
-  frameParent: {
-    justifyContent: "center"
+  gridItemFlexBox: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   verDetalle: {
     marginLeft: 4,
     color: "#fafafa",
     fontFamily: "Roboto-Regular",
     fontSize: 12
-  },
-  informacionDelCirculoDeArcParent: {
-    marginLeft: 25,
-    justifyContent: "center"
-  },
-  frameView: {
-    marginTop: 8,
-    justifyContent: "center"
-  },
-  frameGroup: {
-    marginTop: 24,
-    justifyContent: "center"
   },
   contratos: {
     borderRadius: 16,
@@ -115,25 +118,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 8, // Espaciado entre las tarjetas
   },
-  outerIndicator: {
-    width: 16, // Tamaño del indicador externo
+  indicatorImage: {
+    width: 16, // Ajuste del tamaño de la imagen
     height: 16,
-    borderRadius: 8, // Hace que sea circular
-    backgroundColor: 'rgba(0, 128, 0, 0.2)', // Verde con opacidad
     marginLeft: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: 'green',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  innerIndicator: {
-    width: 8, // Tamaño del indicador interno
-    height: 8,
-    borderRadius: 4, // Hace que sea circular
-    backgroundColor: 'green', // Verde sólido
   },
 });
 

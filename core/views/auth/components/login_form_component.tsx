@@ -4,10 +4,20 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image,  } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { loginSchema } from '../../../utils/validations_forms';
+import { loginSchema } from '../../../utils/validators/validations_forms';
 import {Picker} from '@react-native-picker/picker';
+import { login } from '../../../services/auth/auth_service';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
 
-const LoginComponent: React.FC = () => {
+
+type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
+
+interface Props {
+  navigation: NavigationProp;
+}
+
+const LoginComponent: React.FC<Props> = ({ navigation }) => {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(loginSchema)
   });
@@ -17,8 +27,22 @@ const LoginComponent: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit =  (data: any) => {
+    const form ={
+        identification:`${data.tipoDocumento}${data.cedula}`,
+        password: data.password
+    }
+    
+    const responseLogin = login(form);
+    responseLogin.then(resp=>{
+        if (resp.token) {
+            navigation.navigate("Home");
+        }
+    }).catch(err=>{
+        console.log('====================================');
+        console.log(err);
+        console.log('====================================');
+    });
   };
 
   return (

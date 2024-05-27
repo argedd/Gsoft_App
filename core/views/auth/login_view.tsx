@@ -14,7 +14,7 @@ interface Props {
 const LoginView: React.FC<Props> = ({ navigation }) => {
   return (
     <LayoutSecondary>
-      <LoginComponent />
+      <LoginComponent navigation={navigation} />
     </LayoutSecondary>
   );
 };

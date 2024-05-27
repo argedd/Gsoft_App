@@ -1,7 +1,8 @@
 import React from 'react'
 import {  MD3DarkTheme as DefaultTheme,PaperProvider } from 'react-native-paper'
 import AppNavigation from './core/navigations/App_navigation'
-
+import { Provider } from 'react-redux';
+import store from './core/utils/redux/store';
  const App = () => {
   const theme = {
     ...DefaultTheme,
@@ -15,7 +16,9 @@ import AppNavigation from './core/navigations/App_navigation'
   };
   return (
     <PaperProvider theme={theme}>
+      <Provider store={store} >
         <AppNavigation />
+        </Provider>
     </PaperProvider>
   )
 }
