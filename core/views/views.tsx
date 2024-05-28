@@ -7,6 +7,7 @@ import TicketsView from './tickets/tickets_view';
 import TestView from './redes/test/test_view';
 import EstadisticasView from './redes/estadisticas/estadisticas_view';
 import LoginView from './auth/login_view';
+import ContractDetail from './contrato/contract_detail';
 export {
     HomeView,
     ClientView,
@@ -16,5 +17,6 @@ export {
     TicketsView,
     TestView,
     EstadisticasView,
-    LoginView
+    LoginView,
+    ContractDetail
 }

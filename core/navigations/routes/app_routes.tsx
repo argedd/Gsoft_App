@@ -5,7 +5,8 @@ export type RootStackParamListRoute = {
     Gestion: any;
     Facturacion: any;
     Tickets: any;
-    Test: any;
+    // Test: any;
     Estadisticas: any;
     Login: any;
+    Contract: any;
   };

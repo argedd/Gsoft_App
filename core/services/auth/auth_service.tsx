@@ -5,7 +5,7 @@ const gsoftAuthAPI = axios.create({
   baseURL: "https://core.gsoft.app/portal",
 });
 
-export const login = async (data: any) => {
+ const login = async (data: any) => {
   try {
     // Realizar la solicitud de inicio de sesión
   
@@ -34,3 +34,19 @@ export const login = async (data: any) => {
     await AsyncStorage.clear();
   }
 };
+
+const recoveryPassword = async (data: any) => {
+  try {
+    // Realizar la solicitud de inicio de sesión  
+    const response = await gsoftAuthAPI.post('/forgot_password/', data);
+
+    return response.data;
+ 
+  } catch (error) {
+
+  }
+};
+export {
+  login,
+  recoveryPassword,
+}

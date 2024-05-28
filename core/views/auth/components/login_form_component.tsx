@@ -2,14 +2,16 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image,  } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { loginSchema } from '../../../utils/validators/validations_forms';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import { login } from '../../../services/auth/auth_service';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
-
+import LoadingComponent from '../../../components/loading/loading';
+import { DialogComponent, ToastComponent } from '../../../components/components';
+import DialogRecuperar from './dialog_recuperar';
 
 type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -18,6 +20,9 @@ interface Props {
 }
 
 const LoginComponent: React.FC<Props> = ({ navigation }) => {
+  const [showLoading, setShowLoading] = useState(false);
+  const [showModalRecuperar, setShowModalRecuperar] = useState(false);
+  
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(loginSchema)
   });
@@ -27,33 +32,38 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit =  (data: any) => {
-    const form ={
-        identification:`${data.tipoDocumento}${data.cedula}`,
-        password: data.password
+  const onSubmit = async (data: any) => {
+    setShowLoading(true);
+    const form = {
+      identification: `${data.tipoDocumento}${data.cedula}`,
+      password: data.password
+    };
+
+    try {
+      const response = await login(form);
+
+      if (response.token) {
+        setShowLoading(false);
+        navigation.navigate("Home");
+      } else {
+        throw new Error('Login failed');
+      }
+    } catch (error) {
+   
     }
-    
-    const responseLogin = login(form);
-    responseLogin.then(resp=>{
-        if (resp.token) {
-            navigation.navigate("Home");
-        }
-    }).catch(err=>{
-        console.log('====================================');
-        console.log(err);
-        console.log('====================================');
-    });
   };
 
   return (
     <View style={styles.container}>
+      {showLoading && <LoadingComponent isLoading={showLoading} />}
+ 
       <Image style={styles.capa2Icon} resizeMode="cover" source={require("../../../assets/logo_gnetwork.png")} />
       <View style={styles.bienvenidoParent}>
         <Text style={[styles.bienvenido, styles.bienvenidoClr]}>Bienvenido</Text>
         <View style={styles.frameParent}>
-        <View style={styles.inputContainer}>
+          <View style={styles.inputContainer}>
             <View style={styles.row}>
-        <Controller
+              <Controller
                 control={control}
                 name="tipoDocumento"
                 defaultValue="V"
@@ -63,6 +73,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                       selectedValue={value}
                       style={styles.picker}
                       onValueChange={(itemValue) => onChange(itemValue)}
+                      dropdownIconColor="#fff"
                     >
                       <Picker.Item label="V" value="V" />
                       <Picker.Item label="E" value="E" />
@@ -73,34 +84,30 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                   </View>
                 )}
               />
-          <Controller
-            control={control}
-            name="cedula"
-            defaultValue=""
-            render={({ field: { onChange, onBlur, value } }) => (
-                
-              <View style={styles.inputContainer}>
-                <View style={styles.usuarioWrapperBorder}>
-                  <TextInput
-                    style={[styles.usuario1, styles.usuario1Typo]}
-                    placeholder="Cédula"
-                    placeholderTextColor="#fff"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    keyboardType="numeric"
-                  />
-                </View>
-               
-              </View>
-              
-            )}
-          />
-          
-          </View>
-          {errors.cedula && (
-                  <Text style={styles.errorText}>{(errors.cedula as any).message}</Text>
+              <Controller
+                control={control}
+                name="cedula"
+                defaultValue=""
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.inputContainer}>
+                    <View style={styles.usuarioWrapperBorder}>
+                      <TextInput
+                        style={[styles.usuario1, styles.usuario1Typo]}
+                        placeholder="Cédula"
+                        placeholderTextColor="#fff"
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  </View>
                 )}
+              />
+            </View>
+            {errors.cedula && (
+              <Text style={styles.errorText}>{(errors.cedula as any).message}</Text>
+            )}
           </View>
 
           <Controller
@@ -118,6 +125,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
+                    
                   />
                   <TouchableOpacity onPress={togglePasswordVisibility}>
                     <MaterialCommunityIcons
@@ -137,7 +145,15 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.iniciarSesinWrapper} onPress={handleSubmit(onSubmit)}>
           <Text style={[styles.iniciarSesin, styles.buttonTypo]}>Iniciar sesión</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.botonesBotnSegundario} onPress={() => setShowModalRecuperar(true)}>
+          <Text style={styles.iniciarSesin}>Nuevo usuario / olvide contraseña</Text>
+        </TouchableOpacity>
       </View>
+      <DialogComponent visible={showModalRecuperar} onClose={() => setShowModalRecuperar(false)}  >
+      <DialogRecuperar onClose={() => setShowModalRecuperar(false)} />
+
+      </DialogComponent>
+
     </View>
   );
 };
@@ -205,13 +221,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontFamily: "Roboto-Regular",
     // Ensure the input takes up full width and is clickable
-    
+
   },
   password: {
     color: "#fff",
     fontFamily: "Roboto-Regular",
     // Ensure the input takes up full width and is clickable
-    
+
   },
   contraseaParent: {
     justifyContent: "space-between",
@@ -238,7 +254,7 @@ const styles = StyleSheet.create({
   },
   bienvenidoParent: {
     marginLeft: -160,
-    top: 360,
+    top: 300,
     left: "50%",
     alignItems: "center",
     position: "absolute"
@@ -274,12 +290,25 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     marginRight: 8,
-    marginBottom:8,
+    marginBottom: 8,
   },
   picker: {
     color: "#fff",
     width: 90,
   },
+  botonesBotnSegundario: {
+    borderRadius: 8,
+    borderStyle: "solid",
+    borderColor: "#fafafa",
+    borderWidth: 2,
+    width: 320,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    marginTop: 20,
+  }
 });
 
 export default LoginComponent;

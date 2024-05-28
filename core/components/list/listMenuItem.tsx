@@ -1,10 +1,10 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props{
-  icon: string,
+  icon: any,
   title:string, 
   onPress:()=>void
 }
@@ -13,7 +13,7 @@ const MenuItem = ({icon,title, onPress}:Props) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <View style={styles.titleMenu}>
-        <MaterialCommunityIcons name={icon} size={24} color="#fff" />
+        <Image source={icon} style={styles.icon} />
         <Text style={styles.itemText}>{title}</Text>
       </View>
       <View>
@@ -40,7 +40,12 @@ const styles = StyleSheet.create({
 
   titleMenu:{
     flexDirection:'row',
-  }
+  },
+  icon: {
+    width: 28,
+    height: 28,
+    tintColor: '#fff', // Si deseas cambiar el color de la imagen
+  },
 });
 
 export default MenuItem;

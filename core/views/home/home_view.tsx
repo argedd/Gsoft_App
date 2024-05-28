@@ -62,7 +62,7 @@ const HomeView: React.FC<Props> = ({navigation}) => {
         
       />
            <FloatingActionButton
-        icon="headset"
+        icon={require('../../assets/icons/home/asistencia.png')}
         onPress={handleFabPress}
       /> 
           </View>

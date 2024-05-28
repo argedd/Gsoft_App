@@ -1,37 +1,47 @@
 import * as React from "react";
-import { Text, StyleSheet, View, Image } from "react-native";
+import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useDispatch } from "react-redux";
+import { setDataContract } from "../../../utils/redux/actions/contractActions";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamListRoute } from "../../../navigations/routes/app_routes";
+import { useNavigation } from "@react-navigation/native";
 
 interface CardInfoProps {
   data: any;
 }
-
+type NavigationProp = StackNavigationProp<RootStackParamListRoute, 'Contract'>;
 // Función para obtener la imagen según el estado
 const getStatusImage = (status: number) => {
   switch (status) {
     case 16:
-      return require("../../../assets/activo.png");
+      return require("../../../assets/icons/status/activo.png");
     case 18:
-      return require("../../../assets/porInstalar.png");
+      return require("../../../assets/icons/status/porInstalar.png");
     case 19:
-      return require("../../../assets/suspendido.png");
+      return require("../../../assets/icons/status/suspendido.png");
     case 20:
-      return require("../../../assets/pausado.png");
+      return require("../../../assets/icons/status/pausado.png");
     case 35:
-      return require("../../../assets/retirado.png");
+      return require("../../../assets/icons/status/retirado.png");
     // Agrega más casos según los estados que manejes
-  
   }
 };
+
 const CardInfo: React.FC<CardInfoProps> = ({ data }) => {
+  const navigation = useNavigation<NavigationProp>(); // Use the correct type here
+  const handlePress = () => {
+    navigation.navigate("Contract");
+  };
+
   return (
     <LinearGradient
       style={styles.contratos}
       locations={[0, 1]}
       colors={['rgba(255, 255, 255, 0.24)', 'rgba(153, 153, 153, 0.24)']}
     >
-      <View >
+      <TouchableOpacity onPress={handlePress}>
         <View style={styles.frameParentFlexBox}>
           <Text style={[styles.activo, styles.textTypo]}>{data.status_name}</Text>
           <Image source={getStatusImage(data.status)} style={styles.indicatorImage} />
@@ -43,7 +53,7 @@ const CardInfo: React.FC<CardInfoProps> = ({ data }) => {
           </View>
           <View style={styles.gridItem}>
             <Text style={[styles.nContrato, styles.nContratoTypo]}>Deuda:</Text>
-            <Text style={[styles.text, styles.textTypo]}>{data.debt}</Text>
+            <Text style={[styles.text, styles.textTypo]}>{data.debt} USD</Text>
           </View>
           <View style={styles.gridItem}>
             <Text style={[styles.nContrato, styles.nContratoTypo]}>Fecha de pago:</Text>
@@ -54,7 +64,7 @@ const CardInfo: React.FC<CardInfoProps> = ({ data }) => {
             <Text style={[styles.verDetalle, styles.nContratoTypo]}>Ver detalle</Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </LinearGradient>
   );
 };

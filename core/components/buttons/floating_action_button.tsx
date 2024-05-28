@@ -1,15 +1,15 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props{
-    icon: string,
+    icon: any,
     onPress:()=>void
   }
 const FloatingActionButton = ({ icon, onPress }:Props) => {
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-      <MaterialCommunityIcons name={icon} size={24} color="#fff" />
+      <Image source={icon} style={styles.icon} />
     </TouchableOpacity>
   );
 };
@@ -30,6 +30,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
+  },
+  icon: {
+    width: 28,
+    height: 28,
+    tintColor: '#fff', // Si deseas cambiar el color de la imagen
   },
 });
 
