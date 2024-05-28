@@ -10,7 +10,7 @@ import { login } from '../../../services/auth/auth_service';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
 import LoadingComponent from '../../../components/loading/loading';
-import { DialogComponent, ToastComponent } from '../../../components/components';
+import { DialogComponent } from '../../../components/components';
 import DialogRecuperar from './dialog_recuperar';
 
 type NavigationProp = StackNavigationProp<RootStackParamListRoute>;

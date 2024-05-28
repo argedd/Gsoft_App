@@ -2,9 +2,11 @@
 import { combineReducers } from 'redux';
 import {configureStore} from '@reduxjs/toolkit'
 import contractReducer from './reducers/contractReducer';
+import invoiceReducer from './reducers/invoiceReducer';
 
 const rootReducer = combineReducers({
   contractState: contractReducer,
+  invoiceState:invoiceReducer,
 });
 
 const store = configureStore({

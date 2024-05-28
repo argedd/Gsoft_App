@@ -8,6 +8,7 @@ import TestView from './redes/test/test_view';
 import EstadisticasView from './redes/estadisticas/estadisticas_view';
 import LoginView from './auth/login_view';
 import ContractDetail from './contrato/contract_detail';
+import PagoFacturaView from './facturacion/components/pago_factura';
 export {
     HomeView,
     ClientView,
@@ -18,5 +19,6 @@ export {
     TestView,
     EstadisticasView,
     LoginView,
-    ContractDetail
+    ContractDetail,
+    PagoFacturaView,
 }

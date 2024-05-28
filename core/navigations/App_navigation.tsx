@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { NavigationContainer } from '@react-navigation/native';
-import { ClientView, ConfiguracionView, ContractDetail, EstadisticasView, FacturacionView, HomeView, LoginView, TestView, TicketsView } from '../views/views';
-import GestionView from '../views/planes/gestion_view';
+import { 
+   ClientView, 
+   ConfiguracionView, 
+   ContractDetail, 
+   EstadisticasView, 
+   FacturacionView, 
+   GestionView, 
+   HomeView, 
+   LoginView, 
+   PagoFacturaView, 
+   TestView, 
+   TicketsView 
+} from '../views/views';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +39,7 @@ const AppNavigation = () => {
               <Stack.Screen name="Estadisticas" component={EstadisticasView} />
               <Stack.Screen name="Login" component={LoginView} />
               <Stack.Screen name="Contract" component={ContractDetail} />
+              <Stack.Screen name="Pago" component={PagoFacturaView} />
            </Stack.Navigator> 
           </NavigationContainer>
         ) 

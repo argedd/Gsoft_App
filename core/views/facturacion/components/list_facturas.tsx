@@ -2,6 +2,12 @@ import * as React from "react";
 import { Text, StyleSheet, View, TouchableOpacity, FlatList, Image, GestureResponderEvent } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ResultInvoices } from "../../../data/interfaces/invoices_interface";
+import { getInvoice } from "../../../services/facturacion/facturas_service";
+import { useDispatch } from "react-redux";
+import { setInvoice } from "../../../utils/redux/actions/invoiceActions";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamListRoute } from "../../../navigations/routes/app_routes";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 interface Props {
   invoices: ResultInvoices[];
@@ -9,14 +15,21 @@ interface Props {
 
 const ListInvoices: React.FC<Props> = ({ invoices }) => {
 
+  type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
+
+
+  const dispatch = useDispatch();
+  const navigation = useNavigation<NavigationProp>(); // Use the correct type here
+
   const handleDescargar = async (invoice:number) => {
    
   };
 
   const handlePay = async (invoice:number) => {
-   console.log('====================================');
-   console.log(invoice);
-   console.log('====================================');
+   const invoiceResult= await getInvoice(invoice);
+   await dispatch(setInvoice(invoiceResult));
+   navigation.navigate("Pago");
+
   };
 
   const renderInvoiceItem = ({ item }: { item: ResultInvoices }) => (
