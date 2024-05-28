@@ -37,13 +37,6 @@ const FacturacionView = ({ navigation }:Props) => {
     fetchInvoices();
   }, [contract.contract]); // Ejecutar el efecto cuando el contrato cambie
   
-  // Utilizar el estado `invoices` en el componente
-  console.log('Invoices:', invoices);
-  
-  
-  console.log('====================================');
-  console.log(contract.contract);
-  console.log('====================================');
 
   const FacturacionComponent =() =>(
     <View style={styles.container}>

@@ -46,7 +46,22 @@ const recoveryPassword = async (data: any) => {
 
   }
 };
+
+const logout = async () => {
+  try {
+    // Realizar la solicitud de inicio de sesión  
+    await AsyncStorage.clear();
+
+
+    return 'Exit';
+ 
+  } catch (error) {
+
+  }
+};
+
 export {
   login,
   recoveryPassword,
+  logout
 }

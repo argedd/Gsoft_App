@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, StyleSheet, View, TouchableOpacity, FlatList } from "react-native";
+import { Text, StyleSheet, View, TouchableOpacity, FlatList, Image, GestureResponderEvent } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ResultInvoices } from "../../../data/interfaces/invoices_interface";
 
@@ -8,16 +8,32 @@ interface Props {
 }
 
 const ListInvoices: React.FC<Props> = ({ invoices }) => {
-  // Función para renderizar cada elemento de la lista de facturas
+
+  const handleDescargar = async (invoice:number) => {
+   
+  };
+
+  const handlePay = async (invoice:number) => {
+   console.log('====================================');
+   console.log(invoice);
+   console.log('====================================');
+  };
+
   const renderInvoiceItem = ({ item }: { item: ResultInvoices }) => (
-    <TouchableOpacity style={styles.frameFlexBox} onPress={() => console.log(item.id)}>
+    
+    <TouchableOpacity style={styles.frameFlexBox} onPress={()=>item.status ==22 ? handleDescargar(item.id):handlePay( item.id)}>
+
       <View>
-        <Text style={[styles.planPlatino, styles.abril10Typo]}>{item.id} : {item.status_name}</Text>
+        <Text style={[styles.planPlatino, styles.abril10Typo]}>N°{item.id}</Text>
         <Text style={[styles.abril10, styles.abril10Typo]}>{item.date_emission}</Text>
       </View>
       <Text style={[styles.bs, styles.bsFlexBox]}>{item.amount} USD</Text>
+      <Text style={[styles.bs, item.status == 22 ? styles.pagado : styles.other]}>{item.status_name}</Text>
+
       <View style={styles.botonesFlexBox}>
-        <MaterialCommunityIcons name="chevron-right" size={24} color="#fff" />
+        {item.status == 23 ?(<MaterialCommunityIcons name="chevron-right" size={24} color="#fff" />)
+        :(<Image source={require('../../../assets/icons/facturacion/descargar.png')} style={styles.icon} />)}
+
       </View>
     </TouchableOpacity>
   );
@@ -71,6 +87,12 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
 };
 
 const styles = StyleSheet.create({
+  pagado: {
+    color: '#45CC23',
+  },
+  other: {
+    color: '#FF414D',
+  },
   bsFlexBox: {
     textAlign: "left",
     color: "#fafafa"
@@ -143,6 +165,13 @@ const styles = StyleSheet.create({
     color: "#fafafa", // Color blanco
     textAlign: "left", // Alineado a la izquierda
   },
+  icon: {
+    width: 28,
+    height: 28,
+    tintColor: '#fff', // Si deseas cambiar el color de la imagen
+  },
 });
 
 export default ListInvoices;
+
+
