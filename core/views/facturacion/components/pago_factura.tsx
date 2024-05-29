@@ -4,12 +4,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BackButton, LoadingComponent } from '../../../components/components';
 import LayoutPrimary from '../../../components/layouts/layout_primary';
 import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/store';
 import { Invoice } from '../../../data/interfaces/invoice_interface';
 import { percentWidth, percentHeight } from '../../../utils/dimensions/dimensions';
 import { getTasaBcv } from '../../../services/bcv/bcv';
 import { ResultBcv } from '../../../data/interfaces/bcv_interface';
+import { setAmount, setAmountBs } from '../../../utils/redux/actions/invoiceActions';
 
 type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -18,6 +19,8 @@ interface Props {
 }
 
 const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
+    const dispatch = useDispatch();
+
     const invoice = useSelector((state: RootState) => state.invoiceState);
     const contract = useSelector((state: RootState) => state.contractState);
     const [tasaBcv, setTasaBcv] = useState(0);
@@ -47,12 +50,14 @@ const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
     }, [invoice.data]);
 
     useEffect(() => {
-        console.log('====================================');
-        console.log(invoiceDetail?.invoices_items_gsoft);
-        console.log('====================================');
+    
         if (invoiceDetail && tasaBcv) {
             const calculatedTotalBs = Number(tasaBcv) * (Number(invoiceDetail.amount)-Number(invoiceDetail.balance));
+            const calculatedTotal = Number(invoiceDetail.amount)-Number(invoiceDetail.balance);
             setTotalBs(calculatedTotalBs);
+             dispatch(setAmountBs(calculatedTotalBs));
+             dispatch(setAmount(calculatedTotal));
+
         }
     }, [invoiceDetail, tasaBcv]);
 
@@ -121,7 +126,7 @@ const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
 
                     </View>
                 </View>
-                <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={() => { }}>
+                <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={() => { navigation.navigate("InfoPago")}}>
                     <Text style={styles.iniciarSesin}>Ir a pagar</Text>
                 </TouchableOpacity>
             </View>

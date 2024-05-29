@@ -72,10 +72,10 @@ const ContractComponent = ({ data }: ContractComponentProps) => (
                 <Text style={[styles.deMayo, styles.textTypo]}>Pagar antes del {data.date_cicle} para evitar cortes</Text>
               </View>
             </View>
-            {/* <View style={styles.frameViewSpaceBlock}>
+            <View style={styles.frameViewSpaceBlock}>
               <Text style={styles.mbps30Typo}>Firma cliente:</Text>
               <Image style={styles.firmas1Icon} resizeMode="cover" source={{ uri: data.signe }} />
-            </View> */}
+            </View>
           </View>
           <View style={styles.fechaDeCobroParent}>
             <Text style={styles.mbps30Typo}>Dirección</Text>

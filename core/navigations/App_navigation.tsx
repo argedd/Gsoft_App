@@ -9,8 +9,10 @@ import {
    FacturacionView, 
    GestionView, 
    HomeView, 
+   InfoPagoView, 
    LoginView, 
    PagoFacturaView, 
+   ReportePagoView, 
    TestView, 
    TicketsView 
 } from '../views/views';
@@ -40,6 +42,8 @@ const AppNavigation = () => {
               <Stack.Screen name="Login" component={LoginView} />
               <Stack.Screen name="Contract" component={ContractDetail} />
               <Stack.Screen name="Pago" component={PagoFacturaView} />
+              <Stack.Screen name="InfoPago" component={InfoPagoView} />
+              <Stack.Screen name="ReportePago" component={ReportePagoView} />
            </Stack.Navigator> 
           </NavigationContainer>
         ) 

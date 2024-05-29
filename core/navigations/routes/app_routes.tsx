@@ -10,4 +10,6 @@ export type RootStackParamListRoute = {
     Login: any;
     Contract: any;
     Pago: any;
+    InfoPago: any;
+    ReportePago:any;
   };
