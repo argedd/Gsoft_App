@@ -1,4 +1,5 @@
 import { Invoice } from "../../../data/interfaces/invoice_interface";
+import { ResultMethods, RootMethods } from "../../../data/interfaces/methods_interface";
 
 export const setInvoice = (invoice: Invoice) => ({
     type: 'SET_INVOICE',
@@ -18,4 +19,9 @@ export const setInvoice = (invoice: Invoice) => ({
   export const setMethod = (method: any) => ({
     type: 'SET_METHOD',
     payload: method,
+  });
+
+  export const getMethodsClient = (methods: RootMethods) => ({
+    type: 'GET_METHODS',
+    payload: methods,
   });

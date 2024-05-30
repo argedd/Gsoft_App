@@ -10,7 +10,8 @@ import { Invoice } from '../../../data/interfaces/invoice_interface';
 import { percentWidth, percentHeight } from '../../../utils/dimensions/dimensions';
 import { getTasaBcv } from '../../../services/bcv/bcv';
 import { ResultBcv } from '../../../data/interfaces/bcv_interface';
-import { setAmount, setAmountBs } from '../../../utils/redux/actions/invoiceActions';
+import { setAmount, setAmountBs, getMethodsClient } from '../../../utils/redux/actions/invoiceActions';
+import { getMehotds } from '../../../services/facturacion/methods_service';
 
 type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -40,6 +41,18 @@ const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
             }
         };
 
+        const fetchMethods = async () => {
+            try {
+                const methods = await getMehotds();
+           
+                dispatch(getMethodsClient(methods));
+
+            } catch (error) {
+                console.error('Error al obtener la tasa BCV:', error);
+            }
+        };
+
+        fetchMethods();
         fetchTasaBcv();
     }, []);
 
@@ -60,7 +73,7 @@ const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
 
         }
     }, [invoiceDetail, tasaBcv]);
-
+    
     const PagoFacturaComponent = () => (
         <View style={styles.container}>
             <BackButton title={'Pago Factura'} />
