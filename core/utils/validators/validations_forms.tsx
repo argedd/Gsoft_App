@@ -22,13 +22,9 @@ export const recuperarSchema = Yup.object().shape({
 
 
 export const pagoMovilSchema = Yup.object().shape({
-  areaCode: Yup.string()
-    .required('Operadora es Requerida.')
-    .matches(/^[0-9]+$/, 'la Operadora debe ser numérica')
-    .min(4, 'la Operadora debe tener maximo 4 dígitos')
-    .max(4, 'la Operadora debe tener maximo 4 dígitos'),
+  areaCode: Yup.string(),
     phoneNumber: Yup.string()
-  .required('Teléfono es Requerid0.')
+  .required('Teléfono es Requerido.')
     .matches(/^[0-9]+$/, 'eléfono debe ser numéric0')
     .max(7, 'la Operadora debe tener maximo 7 dígitos')
     .min(7, 'la Operadora debe tener maximo 7 dígitos'),
@@ -36,6 +32,31 @@ export const pagoMovilSchema = Yup.object().shape({
   .required('Referencia es Requerida.')
   .matches(/^[0-9]+$/, 'la referencia debe ser numérica')
   .min(6, 'la referencia debe tener al menos 6 dígitos'),
+  alias: Yup.string()
+
+});
+
+export const transferenciaSchema = Yup.object().shape({
+  accountNumber: Yup.string()
+  .required('Cuenta es Requerida.')
+  .matches(/^[0-9]+$/, 'la cuenta debe ser numérica')
+  .min(6, 'Nro de Cuenta debe tener al menos 6 dígitos'),
+  referenceNumber: Yup.string()
+  .required('Referencia es Requerida.')
+  .matches(/^[0-9]+$/, 'la referencia debe ser numérica')
+  .min(6, 'la referencia debe tener al menos 6 dígitos'),
+  alias: Yup.string()
+
+});
+
+
+export const zelleSchema = Yup.object().shape({
+  titular: Yup.string()
+  .required('Titular es Requerido.'),
+  amount: Yup.string()
+  .required('Monto es Requerido.'),
+  date: Yup.string()
+  .required('Fecha de pago requerida.'),
   alias: Yup.string()
 
 });

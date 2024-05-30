@@ -10,7 +10,7 @@ interface DialogComponentProps {
 const DialogComponent: React.FC<DialogComponentProps> = ({ visible, onClose, children }) => {
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={visible}
       onRequestClose={onClose}

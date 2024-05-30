@@ -3,22 +3,19 @@ import { Text, StyleSheet, View, TextInput, TouchableOpacity } from "react-nativ
 import { percentHeight, percentWidth } from "../../../../../utils/dimensions/dimensions";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
-import { pagoMovilSchema } from '../../../../../utils/validators/validations_forms';
+import {  transferenciaSchema } from '../../../../../utils/validators/validations_forms';
 import CheckBox from '@react-native-community/checkbox';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useEffect, useState } from "react";
-import { DialogComponent, ErrorComponent, LoadingComponent, SuccesComponent } from "../../../../../components/components";
+import { ErrorComponent, LoadingComponent, SuccesComponent } from "../../../../../components/components";
 import { paymentValidate } from "../../../../../services/facturacion/facturas_service";
 import DialogNotificationComponent from "../../../../../components/dialogs/dialogNotification";
-import CardPhones from "./components/card_phones";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../../utils/redux/store";
-import { setAreaCode } from '../../../../../utils/redux/actions/formActions';
-import { useNavigation } from "@react-navigation/native";
+import { formatDate } from "../../../../../utils/validators/format_date";
 
-const MethodPm = () => {
+const MethodTrf = () => {
     const { control, handleSubmit, formState: { errors },setValue  } = useForm({
-        resolver: yupResolver(pagoMovilSchema),
+        resolver: yupResolver(transferenciaSchema),
         shouldUnregister: false
     });
     const [showAlias, setShowAlias] = React.useState(false);
@@ -33,11 +30,9 @@ const MethodPm = () => {
     useEffect(() => {
         if (sender && method === sender.method) {
             const senderDigits = sender.sender;
-            const firstFourDigits = senderDigits.slice(0, 4);
-            const remainingDigits = senderDigits.slice(4);
+            setValue('accountNumber', senderDigits); // Set initial phone number value
 
-            dispatch(setAreaCode(firstFourDigits));
-            setValue('phoneNumber', remainingDigits); // Set initial phone number value
+// Set initial phone number value
         }
     }, [sender, method, setValue, dispatch]);
     
@@ -53,7 +48,7 @@ const MethodPm = () => {
             "reference": data.referenceNumber,
             "sender": `${area}${data.phoneNumber}`,
             "method": 1,
-            "date": "2024-05-29"
+            "date": formatDate(new Date())
         };
 
         console.log('====================================');
@@ -96,55 +91,31 @@ const MethodPm = () => {
                 <Text style={[styles.reportaTuPago, styles.iniciarSesinTypo]}>Reporta tu pago</Text>
                 <View style={styles.formTelefonoParent}>
                     <View>
-                        <Text style={[styles.nDeTelfono, styles.textTypo]}>Nº de teléfono</Text>
+                        <Text style={[styles.nDeTelfono, styles.textTypo]}>Nº de cuenta</Text>
                         <View style={[styles.frameGroup, styles.frameGroupSpaceBlock]}>
-                            <TouchableOpacity onPress={toggleDialog}>
-                                <View style={[styles.parent, styles.wrapperBorder]}>
-                                    <Controller
-                                        control={control}
-                                        name="areaCode"
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <>
-                                                <TextInput
-                                                    style={styles.text}
-                                                    onBlur={onBlur}
-                                                    onChangeText={onChange}
-                                                    value={area}
-                                                    placeholder="0412"
-                                                    placeholderTextColor="#fff"
-                                                    maxLength={4}
-                                                    selectionColor="red"
-                                                    editable={false}
-                                                />
-                                                <Icon name="keyboard-arrow-down" size={24} color="#fff" />
-                                            </>
-                                        )}
+                        <Controller
+                            control={control}
+                            name="accountNumber"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <View style={[styles.zathit17Wrapper, styles.wrapperBorder]}>
+                                    <TextInput
+                                        style={styles.text}
+                                        onBlur={onBlur}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        placeholder="000000"
+                                        placeholderTextColor="#fff"
+                                        keyboardType="numeric"
+                                        maxLength={6}
+
                                     />
                                 </View>
-                            </TouchableOpacity>
-                            <Controller
-                                control={control}
-                                name="phoneNumber"
-                                render={({ field: { onChange, onBlur, value } }) => (
-                                    <View style={[styles.wrapper, styles.wrapperBorder]}>
-                                        <TextInput
-                                            style={styles.text}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value}
-                                            placeholder="*******"
-                                            placeholderTextColor="#fff"
-                                            keyboardType="numeric"
-                                            maxLength={7}
-
-                                        />
-                                    </View>
-                                )}
-                            />
+                            )}
+                        />
                             
                         </View>
-                        {errors.phoneNumber && (
-              <Text style={styles.errorText}>{(errors.phoneNumber as any).message}</Text>
+                        {errors.accountNumber && (
+              <Text style={styles.errorText}>{(errors.accountNumber as any).message}</Text>
             )}
                     </View>
                     <View style={styles.formUsuario}>
@@ -215,9 +186,7 @@ const MethodPm = () => {
                 {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} />}
                 {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} />}
             </DialogNotificationComponent>
-            <DialogComponent visible={showDialog} onClose={toggleDialog}>
-                <CardPhones onClose={()=>setShowDialog(false)}/>
-            </DialogComponent>
+       
         </View>
     );
 };
@@ -341,4 +310,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default MethodPm;
+export default MethodTrf;

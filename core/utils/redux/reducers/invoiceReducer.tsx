@@ -34,6 +34,8 @@ const invoiceReducer = (state = initialState, action: { type: any; payload: any;
         ...state,
         methods: action.payload,
       };
+      case 'RESET_FORM':
+        return initialState;
     default:
       return state;
   }

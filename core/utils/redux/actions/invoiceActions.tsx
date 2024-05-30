@@ -25,3 +25,7 @@ export const setInvoice = (invoice: Invoice) => ({
     type: 'GET_METHODS',
     payload: methods,
   });
+
+  export const resetForm = () => ({
+    type: 'RESET_FORM',
+});

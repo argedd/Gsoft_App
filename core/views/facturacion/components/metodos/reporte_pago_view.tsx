@@ -1,16 +1,15 @@
-import React, { useState } from 'react'
-
-import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useMemo, useState } from 'react'
 import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Layout from '../../../../components/layouts/layout';
-import { BackButton } from '../../../../components/components';
+import { BackButton, DialogComponent } from '../../../../components/components';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../utils/redux/store';
-import InfoPmComponent from '../info_pago/info_pm';
-import InfoTrfComponent from '../info_pago/info_trf';
-import InfoZelleComponent from '../info_pago/info_zelle';
 import { percentWidth, percentHeight } from '../../../../utils/dimensions/dimensions';
 import { MethodPm } from './metodos';
+import Agenda from './agenda/agenda';
+import { useNavigation } from '@react-navigation/native';
+import MethodTrf from './transferencia/trf_form';
+import MethodZelle from './zelle/zelle_form';
 
 
 
@@ -19,11 +18,18 @@ const ReportePagoView = () => {
   const methodSelect = useSelector((state: RootState) => state.invoiceState.method);
   const methods = useSelector((state: RootState) => state.invoiceState.methods.results);
   const [selectedMethod, setSelectedMethod] = useState<number>(methodSelect);
+  const [showDialog, setShowDialog] = useState(false);
+const navigation = useNavigation();
 
-   console.log('====================================');
-   console.log(methodSelect);
-   console.log('====================================');
-   console.log(methods);
+   // Filtrar los métodos en función de selectedMethod
+  const filteredMethods = useMemo(() => {
+    return methods.filter((method: { method: number; }) => method.method === selectedMethod);
+  }, [methods, selectedMethod]);
+
+
+   const toggleDialog = () => {
+    setShowDialog(!showDialog);
+};
 
    const renderSelectedComponent = () => {
     switch (selectedMethod) {
@@ -31,10 +37,10 @@ const ReportePagoView = () => {
         return <MethodPm />;
       case 4:
     
-        return <InfoTrfComponent />;
+        return <MethodTrf />;
       case 3:
      
-        return <InfoZelleComponent />;
+        return <MethodZelle />;
       default:
         return null;
     }
@@ -124,7 +130,7 @@ const ReportePagoView = () => {
             
         </View>
         <View style={[styles.frameParent, styles.parentFlexBox]}>
-        <TouchableOpacity style={[styles.botonesBotnSegundario, styles.parentFlexBox]} onPress={()=>{}}>
+        <TouchableOpacity style={[styles.botonesBotnSegundario, styles.parentFlexBox]} onPress={toggleDialog}>
         <Text style={styles.iniciarSesin}>Datos de pagos guardados</Text>
         </TouchableOpacity>
           {/* <View style={styles.datosDelPagoMvilParent}> */}
@@ -134,11 +140,15 @@ const ReportePagoView = () => {
           {/* <TouchableOpacity style={[styles.botonesBotnPrincipal, styles.parentFlexBox]} onPress={() => {}}>
             <Text style={styles.iniciarSesin}>Reportar pago</Text>
           </TouchableOpacity> */}
-          <TouchableOpacity style={[styles.botonesBotnSegundario, styles.parentFlexBox]} onPress={()=>{}}>
+          <TouchableOpacity style={[styles.botonesBotnSegundario, styles.parentFlexBox]} onPress={navigation.goBack}>
         <Text style={styles.iniciarSesin}>Atrás</Text>
         </TouchableOpacity>
         </View>
       </View>
+      <DialogComponent visible={showDialog} onClose={toggleDialog} >
+
+        <Agenda onClose={() => setShowDialog(false)} metodos={filteredMethods}/>
+            </DialogComponent>
         
           </View>
       

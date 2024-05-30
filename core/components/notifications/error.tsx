@@ -7,14 +7,14 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 interface Props {
     onClose: () => void;
   }
-  const SuccesComponent: React.FC<Props> = ({ onClose }) =>  {
+  const ErrorComponent: React.FC<Props> = ({ onClose }) =>  {
   
 
 
   return (
     <View style={styles.frameParent}>
     <View style={styles.capa1Parent}>
-    <Image style={styles.capa1Icon} resizeMode="cover" source={require('../../assets/icons/notificacion/succes.png')} />
+    <Image style={styles.capa1Icon} resizeMode="cover" source={require('../../assets/icons/notificacion/advertencia.png')} />
     <Text style={styles.tuOperacinHa}>No pudimos encontrar el pago</Text>
     </View>
     <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={onClose}>
@@ -68,4 +68,4 @@ const styles = StyleSheet.create({
     }
     });
 
-export default SuccesComponent;
+export default ErrorComponent;
