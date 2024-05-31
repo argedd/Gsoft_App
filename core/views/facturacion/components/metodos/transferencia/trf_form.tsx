@@ -26,6 +26,8 @@ const MethodTrf = () => {
     const area = useSelector((state: RootState) => state.formState.areaCode);
     const sender = useSelector((state: RootState) => state.formState.sender);
     const method = useSelector((state: RootState) => state.invoiceState.method);
+    const contract = useSelector((state: RootState) => state.contractState.contract);
+    const invoice = useSelector((state: RootState) => state.invoiceState.data);
     const dispatch = useDispatch();
     useEffect(() => {
         if (sender && method === sender.method) {
@@ -44,11 +46,11 @@ const MethodTrf = () => {
     const onSubmit = async (data: any) => {
         const formValidate = {
             "bank": null,
-            "amount": 1000,
+            "amount": 1096,
             "reference": data.referenceNumber,
-            "sender": `${area}${data.phoneNumber}`,
-            "method": 1,
-            "date": formatDate(new Date())
+            "sender": data.accountNumber,
+            "method": 4,
+            "date": "2024-05-30"
         };
 
         console.log('====================================');
@@ -59,7 +61,7 @@ const MethodTrf = () => {
         try {
             const responseValidate = await paymentValidate(formValidate);
 
-            console.log('====================================');
+            console.log('aqui vali====================================');
             console.log(responseValidate);
             console.log('====================================');
 
@@ -71,7 +73,29 @@ const MethodTrf = () => {
                 setNotificationType('error');
             } else {
                 console.log('Payment validation successful');
-                setNotificationType('success');
+               const formPay={ 
+                payment: [
+                    {
+                      bank: null,
+                      method: 4,
+                      reference: data.referenceNumber,
+                      amount: responseValidate.monto,
+                      amount_bs: Number('1096'),
+                      sender: data.accountNumber,
+                      date: '2024-05-30',
+                      contract:contract ,
+                      payment_invoices: [
+                        {
+                          invoice: invoice.id,
+                          amount: responseValidate.monto,
+                        },
+                      ],
+                    },
+                  ],
+                }
+              
+             setNotificationType('success');
+
             }
             setShowLoading(false);
             setShowNotification(true);

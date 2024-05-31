@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { NavigationContainer } from '@react-navigation/native';
 import { 
+   AfiliacionView,
    ClientView, 
    ConfiguracionView, 
    ContractDetail, 
@@ -44,6 +45,7 @@ const AppNavigation = () => {
               <Stack.Screen name="Pago" component={PagoFacturaView} />
               <Stack.Screen name="InfoPago" component={InfoPagoView} />
               <Stack.Screen name="ReportePago" component={ReportePagoView} />
+              <Stack.Screen name="Afiliacion" component={AfiliacionView} />
            </Stack.Navigator> 
           </NavigationContainer>
         ) 

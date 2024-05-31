@@ -29,9 +29,11 @@ const getInvoice = async (invoice: number): Promise<Invoice> => {
 
 const paymentValidate = async (formValidate: any) => {
    
-    return validateApi.post(`payments/pmbd/validate/`, formValidate).then(resp=>{
-      return resp;
+    return validateApi.post<any>(`payments/pmbd/validate/`, formValidate).then(resp=>{
+     
+      return resp.data;
     }).catch(err=>{
+
       return {error:'Pago No encontrado'}
     }); // Devuelve solo los datos de la respuesta
  

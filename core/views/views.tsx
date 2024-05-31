@@ -11,6 +11,7 @@ import ContractDetail from './contrato/contract_detail';
 import PagoFacturaView from './facturacion/components/pago_factura';
 import InfoPagoView from './facturacion/components/info_pago/info_pago_view';
 import ReportePagoView from './facturacion/components/metodos/reporte_pago_view';
+import AfiliacionView from './cliente/afiliacion-cuentas/afiliacion_view';
 export {
     HomeView,
     ClientView,
@@ -25,4 +26,5 @@ export {
     PagoFacturaView,
     InfoPagoView,
     ReportePagoView,
+    AfiliacionView
 }
