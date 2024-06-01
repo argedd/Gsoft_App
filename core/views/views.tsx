@@ -14,6 +14,7 @@ import ReportePagoView from './facturacion/components/metodos/reporte_pago_view'
 import AfiliacionView from './cliente/afiliacion-cuentas/afiliacion_view';
 import RegistrarCuentaView from './cliente/afiliacion-cuentas/registrar_cuenta';
 import EditarCuentaView from './cliente/afiliacion-cuentas/components/edicion/editar_cuenta_view';
+import RegistroTicketView from './tickets/components/registro/registro_ticket';
 export {
     HomeView,
     ClientView,
@@ -30,5 +31,6 @@ export {
     ReportePagoView,
     AfiliacionView,
     RegistrarCuentaView,
-    EditarCuentaView
+    EditarCuentaView,
+    RegistroTicketView,
 }

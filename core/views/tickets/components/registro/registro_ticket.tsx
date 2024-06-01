@@ -1,14 +1,22 @@
 import React from 'react';
+
 import { StackNavigationProp } from '@react-navigation/stack';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { BackButton } from '../../../../components/components';
+import LayoutPrimary from '../../../../components/layouts/layout_primary';
+import { RootStackParamListRoute } from '../../../../navigations/routes/app_routes';
 import LinearGradient from 'react-native-linear-gradient';
-import { percentWidth, percentHeight } from '../../../utils/dimensions/dimensions';
-import { BackButton } from '../../../components/components';
-import LayoutPrimary from '../../../components/layouts/layout_primary';
-import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
 
-type ConfiguracionViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
+type ConfiguracionViewNavigationProp =
+  StackNavigationProp<RootStackParamListRoute>;
 
 interface Props {
   navigation: ConfiguracionViewNavigationProp;
@@ -32,12 +40,11 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
           locations={[0.04, 1]}
           colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']}
           useAngle={true}
-          angle={180}
-        >
+          angle={180}>
           <Image
             style={styles.vectorIcon}
             resizeMode="cover"
-            source={require('../../../assets/icons/notificacion/advertencia.png')}
+            source={require('../../../../assets/icons/notificacion/advertencia.png')}
           />
           <View style={styles.subeUnaImagenParent}>
             <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>
@@ -47,29 +54,27 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
               style={[
                 styles.formatosAdmitidosJpg,
                 styles.subeUnaImagenFlexBox,
-              ]}
-            >
+              ]}>
               Formatos admitidos: JPG y PNG
             </Text>
           </View>
         </LinearGradient>
         <View style={styles.parentFlexBox}>
           <View></View>
+
           <View style={styles.formSeleccinMetodosDePag}>
             <Text style={[styles.metodoDePago, styles.text1Typo]}>
               Departamento
             </Text>
             <View
-              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}
-            >
+              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}>
               <Text style={[styles.text1, styles.text1Typo]}>Departamento</Text>
             </View>
           </View>
           <View style={styles.formSeleccinMetodosDePag}>
             <Text style={[styles.metodoDePago, styles.text1Typo]}>Asunto</Text>
             <View
-              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}
-            >
+              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}>
               <Text style={[styles.text1, styles.text1Typo]}>Asunto</Text>
             </View>
           </View>
@@ -94,54 +99,59 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.iniciarSesin}>Crear nuevo ticket</Text>
       </View>
     </View>
+      
+    
   );
   return (
     <LayoutPrimary>
-      <ScrollView style={styles.container}>
-        <BackButton title={'Afiliación de cuentas'} />
-        <RegistroComponent />
-      </ScrollView>
+        <ScrollView style={styles.container}>
+    <BackButton title={'Afiliación de cuentas'} />
+        <RegistroComponent/>
+</ScrollView>
     </LayoutPrimary>
+  
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // marginTop: 50,
   },
-  containerItem: {
-    alignContent: 'center',
-    alignItems: 'center',
+  containerItem:{
+    alignContent:'center',
+    alignItems:'center',
   },
+
   iniciarSesin: {
-    fontSize: percentWidth(4),
-    fontWeight: '600',
-    fontFamily: 'Inter-SemiBold',
-    color: '#fafafa',
-    textAlign: 'left',
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "Inter-SemiBold",
+    color: "#fafafa",
+    textAlign: "left"
   },
   botonesBotnPrincipal: {
-    borderRadius: percentWidth(2),
-    backgroundColor: '#e20a17',
-    width: '90%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: percentWidth(8),
-    paddingVertical: percentHeight(1.5),
-    marginTop: percentHeight(2),
+    borderRadius: 8,
+    backgroundColor: "#e20a17",
+    width: "90%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    marginTop:8,
   },
   textTypo: {
     textAlign: 'left',
-    fontSize: percentWidth(4),
+    fontSize: 16,
   },
   parentFlexBox1: {
     justifyContent: 'center',
-    marginTop: percentHeight(2),
+    marginTop: 8,
   },
   parentFlexBox: {
     alignSelf: 'stretch',
-    marginTop: percentHeight(2),
+    marginTop: 8,
   },
   subeUnaImagenFlexBox: {
     textAlign: 'center',
@@ -153,14 +163,18 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   parentWrapperBorder: {
-    paddingVertical: percentHeight(1.5),
+    paddingVertical: 12,
     borderWidth: 0.5,
     borderColor: '#fafafa',
-    borderRadius: percentWidth(2),
+    borderRadius: 8,
     flexDirection: 'row',
-    paddingHorizontal: percentWidth(4),
+    paddingHorizontal: 16,
     alignItems: 'center',
     borderStyle: 'solid',
+  },
+  vectorIconLayout: {
+    height: 7,
+    width: 12,
   },
   detallaLaIncidencia: {
     fontWeight: '500',
@@ -171,89 +185,105 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Roboto-Bold',
     color: '#fafafa',
-    marginTop: percentHeight(2.5),
+    marginTop: 10,
     fontWeight: '600',
   },
   nContratoParent: {
-    marginTop: percentHeight(2),
+    marginTop: 8,
     alignItems: 'center',
   },
   vectorIcon: {
-    width: percentWidth(9.5),
-    height: percentWidth(9.5),
+    width: 38,
+    height: 38,
   },
   subeUnaImagen: {
-    fontSize: percentWidth(4.25),
+    fontSize: 17,
     fontFamily: 'Inter-SemiBold',
     fontWeight: '600',
   },
   formatosAdmitidosJpg: {
-    fontSize: percentWidth(3.25),
+    fontSize: 13,
     fontFamily: 'Inter-Regular',
-    marginTop: percentHeight(2.1),
+    marginTop: 8.4,
   },
   subeUnaImagenParent: {
-    marginTop: percentHeight(4.2),
+    marginTop: 16.8,
     alignItems: 'center',
   },
   vectorParent: {
-    borderRadius: percentWidth(4.25),
-    height: percentHeight(17.75),
-    padding: percentWidth(4.25),
+    borderRadius: 17,
+    height: 141,
+    padding: 17,
     backgroundColor: 'transparent',
     alignItems: 'center',
   },
   nDeTelfono: {
-    fontSize: percentWidth(3.5),
+    fontSize: 14,
     fontFamily: 'Roboto-Regular',
   },
   text1: {
-    fontSize: percentWidth(4),
+    fontSize: 16,
     fontFamily: 'Roboto-Regular',
   },
+  vectorIcon1: {
+    marginLeft: 10,
+  },
+  parent: {
+    width: 90,
+  },
+  wrapper: {
+    marginLeft: 4,
+  },
+  frameParent: {
+    flexDirection: 'row',
+    width: 278,
+    marginTop: 8,
+  },
   zathit17Wrapper: {
-    width: percentWidth(69.5),
-    marginTop: percentHeight(2),
+    width: 278,
+    marginTop: 8,
+  },
+  formUsuario: {
+    marginTop: 16,
   },
   metodoDePago: {
     opacity: 0,
-    fontSize: percentWidth(3.5),
+    fontSize: 14,
     fontFamily: 'Roboto-Regular',
   },
   metodoDePagoParent: {
     justifyContent: 'space-between',
     alignSelf: 'stretch',
-    marginTop: percentHeight(2),
+    marginTop: 8,
   },
   formSeleccinMetodosDePag: {
-    marginTop: percentHeight(4),
-    width: percentWidth(69.5),
+    marginTop: 16,
+    width: 278,
   },
   intentoHacerEl: {
-    fontSize: percentWidth(4),
+    fontSize: 16,
     fontFamily: 'Roboto-Regular',
   },
   hasta1000Caracteres: {
-    fontSize: percentWidth(3),
-    width: percentWidth(30.25),
-    height: percentHeight(1.75),
-    marginTop: percentHeight(2),
+    fontSize: 12,
+    width: 121,
+    height: 14,
+    marginTop: 8,
   },
   formUsuarioParent: {
     alignItems: 'flex-end',
-    marginTop: percentHeight(2),
+    marginTop: 8,
   },
   detallaLaIncidenciaParent: {
-    borderRadius: percentWidth(4),
+    borderRadius: 16,
     backgroundColor: 'rgba(171, 170, 170, 0.26)',
     borderColor: '#fff',
     borderWidth: 0.4,
     width: '90%',
-    paddingVertical: percentHeight(8),
-    paddingHorizontal: percentWidth(4),
+    paddingVertical: 32,
+    paddingHorizontal: 16,
     borderStyle: 'solid',
     alignItems: 'center',
   },
 });
-
 export default RegistroTicketView;

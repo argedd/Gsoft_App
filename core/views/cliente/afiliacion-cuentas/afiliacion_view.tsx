@@ -7,7 +7,7 @@ import LayoutPrimary from '../../../components/layouts/layout_primary';
 import { ResultMethods } from '../../../data/interfaces/methods_interface';
 import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
 import { percentWidth, percentHeight } from '../../../utils/dimensions/dimensions';
-import {  getMethods } from '../../../services/facturacion/methods_service';
+import { getMethods } from '../../../services/facturacion/methods_service';
 import { useFocusEffect } from '@react-navigation/native';
 
 type ConfiguracionViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
@@ -18,27 +18,27 @@ interface Props {
 
 const AfiliacionView: React.FC<Props> = ({ navigation }) => {
     const [metodos, setMetodos] = useState<ResultMethods[]>([]);
-    
+
     useFocusEffect(
         React.useCallback(() => {
-        const fetchMethods = async () => {
-            try {
-                const methods = await getMethods();
-                setMetodos(methods.results);
-            } catch (error) {
-                console.error('Error al obtener metodos del cliente:', error);
-            }
-        };
+            const fetchMethods = async () => {
+                try {
+                    const methods = await getMethods();
+                    setMetodos(methods.results);
+                } catch (error) {
+                    console.error('Error al obtener metodos del cliente:', error);
+                }
+            };
 
-        fetchMethods();
-    }, []));
+            fetchMethods();
+        }, []));
 
     const ComponentNoMetodos = () => (
         <Text style={styles.aunNoTienes}>Aun no tienes cuentas afiliadas</Text>
     );
 
-    const editMethod = (method:any) =>{
-        navigation.navigate('EditarCuenta', {method: method});
+    const editMethod = (method: any) => {
+        navigation.navigate('EditarCuenta', { method: method });
     }
 
 
@@ -47,23 +47,23 @@ const AfiliacionView: React.FC<Props> = ({ navigation }) => {
         <View style={styles.frameParent}>
             <View style={styles.frameGroup}>
                 {metodos.map((metodo, index) => (
-                    <TouchableOpacity key={index} onPress={()=>editMethod(metodo)}>
-                    <LinearGradient
-                        key={index}
-                        style={styles.iconosAfiliacionDeCuentasParent}
-                        locations={[0.04, 1]}
-                        colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']}
-                        useAngle={true}
-                        angle={180}
-                    >
-                        <View style={styles.iconosAfiliacionDeCuentas}>
-                            <Image style={styles.vectorIcon} resizeMode="cover" source={require("../../../assets/icons/user/afiliacion-cuentas.png")} />
-                        </View>
-                        <View style={styles.frameContainer}>
-                            <Text style={[styles.gabrielaRamos, styles.iniciarSesinFlexBox]}>{metodo.name}</Text>
-                            <Text style={[styles.metodoPagoMvil, styles.iniciarSesinFlexBox]}>Metodo: {metodo.method_name}</Text>
-                        </View>
-                    </LinearGradient>
+                    <TouchableOpacity key={index} onPress={() => editMethod(metodo)}>
+                        <LinearGradient
+                            key={index}
+                            style={styles.iconosAfiliacionDeCuentasParent}
+                            locations={[0.04, 1]}
+                            colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']}
+                            useAngle={true}
+                            angle={180}
+                        >
+                            <View style={styles.iconosAfiliacionDeCuentas}>
+                                <Image style={styles.vectorIcon} resizeMode="cover" source={require("../../../assets/icons/user/afiliacion-cuentas.png")} />
+                            </View>
+                            <View style={styles.frameContainer}>
+                                <Text style={[styles.gabrielaRamos, styles.iniciarSesinFlexBox]}>{metodo.name}</Text>
+                                <Text style={[styles.metodoPagoMvil, styles.iniciarSesinFlexBox]}>Metodo: {metodo.method_name}</Text>
+                            </View>
+                        </LinearGradient>
                     </TouchableOpacity>
                 ))}
             </View>
@@ -99,11 +99,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     iniciarSesin: {
-fontFamily: "Inter-SemiBold",
-fontWeight: "600",
-fontSize: 16,
-color: "#fafafa"
-},
+        fontFamily: "Inter-SemiBold",
+        fontWeight: "600",
+        fontSize: 16,
+        color: "#fafafa"
+    },
     aunNoTienes: {
         fontSize: percentWidth(6),
         fontWeight: "600",
@@ -157,7 +157,7 @@ color: "#fafafa"
         justifyContent: "flex-start",
         alignItems: "center",
         marginVertical: percentHeight(1),
-        borderRadius:8
+        borderRadius: 8
     },
     botonesBotnPrincipal: {
         position: 'absolute',

@@ -11,6 +11,11 @@ export const setAreaCode = (areaCode: any) => ({
     type: 'RESET_FORM',
 });
 
+export const setDigiCedula = (digit: any) => ({
+  type: 'SET_DCEDULA',
+  payload: digit,
+});
+
  
   
   

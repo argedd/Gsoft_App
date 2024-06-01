@@ -39,7 +39,7 @@ const ClientView:  React.FC<Props> =  ({ navigation }) => {
     <MenuItem
       title={item.title}
       icon={item.icon}
-      onPress={() => navigation.navigate(item.route)}
+      onPress={() => navigation.navigate(item.route as any)}
     />
   );
   

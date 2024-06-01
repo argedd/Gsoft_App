@@ -15,6 +15,7 @@ import {
    LoginView, 
    PagoFacturaView, 
    RegistrarCuentaView, 
+   RegistroTicketView, 
    ReportePagoView, 
    TestView, 
    TicketsView 
@@ -50,6 +51,7 @@ const AppNavigation = () => {
               <Stack.Screen name="Afiliacion" component={AfiliacionView} />
               <Stack.Screen name="RegistrarCuenta" component={RegistrarCuentaView} />
               <Stack.Screen name="EditarCuenta" component={EditarCuentaView} />
+              <Stack.Screen name="RegistrarTicket" component={RegistroTicketView} />
            </Stack.Navigator> 
           </NavigationContainer>
         ) 
