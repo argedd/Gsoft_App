@@ -6,8 +6,9 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface Props {
     onClose: () => void;
+    message: string;
   }
-  const ErrorComponent: React.FC<Props> = ({ onClose }) =>  {
+  const ErrorComponent: React.FC<Props> = ({ onClose, message }) =>  {
   
 
 
@@ -15,7 +16,7 @@ interface Props {
     <View style={styles.frameParent}>
     <View style={styles.capa1Parent}>
     <Image style={styles.capa1Icon} resizeMode="cover" source={require('../../assets/icons/notificacion/advertencia.png')} />
-    <Text style={styles.tuOperacinHa}>No pudimos encontrar el pago</Text>
+    <Text style={styles.tuOperacinHa}>{message}</Text>
     </View>
     <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={onClose}>
     <Text style={styles.iniciarSesin}>Volver a Intentarlo</Text>

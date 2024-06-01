@@ -11,7 +11,7 @@ import { percentWidth, percentHeight } from '../../../utils/dimensions/dimension
 import { getTasaBcv } from '../../../services/bcv/bcv';
 import { ResultBcv } from '../../../data/interfaces/bcv_interface';
 import { setAmount, setAmountBs, getMethodsClient } from '../../../utils/redux/actions/invoiceActions';
-import { getMehotds } from '../../../services/facturacion/methods_service';
+import { getMethods } from '../../../services/facturacion/methods_service';
 
 type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -43,12 +43,12 @@ const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
 
         const fetchMethods = async () => {
             try {
-                const methods = await getMehotds();
+                const methods = await getMethods();
            
                 dispatch(getMethodsClient(methods));
 
             } catch (error) {
-                console.error('Error al obtener la tasa BCV:', error);
+                console.error('Error al obtener metodos del cliente:', error);
             }
         };
 

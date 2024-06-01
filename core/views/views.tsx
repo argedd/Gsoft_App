@@ -12,6 +12,8 @@ import PagoFacturaView from './facturacion/components/pago_factura';
 import InfoPagoView from './facturacion/components/info_pago/info_pago_view';
 import ReportePagoView from './facturacion/components/metodos/reporte_pago_view';
 import AfiliacionView from './cliente/afiliacion-cuentas/afiliacion_view';
+import RegistrarCuentaView from './cliente/afiliacion-cuentas/registrar_cuenta';
+import EditarCuentaView from './cliente/afiliacion-cuentas/components/edicion/editar_cuenta_view';
 export {
     HomeView,
     ClientView,
@@ -26,5 +28,7 @@ export {
     PagoFacturaView,
     InfoPagoView,
     ReportePagoView,
-    AfiliacionView
+    AfiliacionView,
+    RegistrarCuentaView,
+    EditarCuentaView
 }

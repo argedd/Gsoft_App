@@ -2,23 +2,33 @@ import * as React from "react";
 
 import LayoutThird from "../layouts/layout_third";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { RootStackParamListRoute } from "../../navigations/routes/app_routes";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useNavigation } from "@react-navigation/native";
 
 
 interface Props {
     onClose: () => void;
+    message: string;
+    route: keyof RootStackParamListRoute;
   }
-  const SuccesComponent: React.FC<Props> = ({ onClose }) =>  {
-  
-
+  const SuccesComponent: React.FC<Props> = ({ onClose, message,route }) =>  {
+    type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
+  const navigation = useNavigation<NavigationProp>(); 
+    
+    const action = () => {
+    onClose();
+    navigation.navigate(route);  
+  };
 
   return (
     <View style={styles.frameParent}>
     <View style={styles.capa1Parent}>
     <Image style={styles.capa1Icon} resizeMode="cover" source={require('../../assets/icons/notificacion/succes.png')} />
-    <Text style={styles.tuOperacinHa}>Tu operación ha sido procesada con éxito</Text>
+    <Text style={styles.tuOperacinHa}>{message}</Text>
     </View>
-    <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={onClose}>
-    <Text style={styles.iniciarSesin}>Volver al inicio</Text>
+    <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={action}>
+    <Text style={styles.iniciarSesin}>Aceptar</Text>
     </TouchableOpacity>
     </View>
   );

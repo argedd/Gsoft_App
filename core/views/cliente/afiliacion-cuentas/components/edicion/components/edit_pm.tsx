@@ -1,115 +1,94 @@
 import * as React from "react";
 import { Text, StyleSheet, View, TextInput, TouchableOpacity } from "react-native";
-import { percentHeight, percentWidth } from "../../../../../utils/dimensions/dimensions";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
-import { pagoMovilSchema } from '../../../../../utils/validators/validations_forms';
-import CheckBox from '@react-native-community/checkbox';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useEffect, useState } from "react";
-import { DialogComponent, ErrorComponent, LoadingComponent, SuccesComponent } from "../../../../../components/components";
-import { paymentValidate } from "../../../../../services/facturacion/facturas_service";
-import DialogNotificationComponent from "../../../../../components/dialogs/dialogNotification";
-import CardPhones from "./components/card_phones";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../../utils/redux/store";
-import { setAreaCode } from '../../../../../utils/redux/actions/formActions';
-import { useNavigation } from "@react-navigation/native";
 
-const MethodPm = () => {
-    const { control, handleSubmit, formState: { errors },setValue  } = useForm({
-        resolver: yupResolver(pagoMovilSchema),
+import DialogConfirm from "../../../../../../components/dialogs/dialogConfirm";
+import { LoadingComponent, SuccesComponent, ErrorComponent, DialogComponent } from "../../../../../../components/components";
+import DialogNotificationComponent from "../../../../../../components/dialogs/dialogNotification";
+import { deleteMethod, editMethods } from "../../../../../../services/facturacion/methods_service";
+import { percentWidth, percentHeight } from "../../../../../../utils/dimensions/dimensions";
+import { setAreaCode } from "../../../../../../utils/redux/actions/formActions";
+import { RootState } from "../../../../../../utils/redux/store";
+import { pagoMovilRegSchema } from "../../../../../../utils/validators/validations_forms";
+import CardPhones from "../../../../../facturacion/components/metodos/pago_movil/components/card_phones";
+
+
+
+const EditPagoMovilForm = (method: any) => {
+
+    const { control, handleSubmit, formState: { errors }, setValue } = useForm({
+        resolver: yupResolver(pagoMovilRegSchema),
         shouldUnregister: false
     });
-    const [showAlias, setShowAlias] = React.useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
     const [notificationType, setNotificationType] = useState<null | 'success' | 'error'>(null);
     const [showDialog, setShowDialog] = useState(false);
+    const [showDialogConfirm, setShowDialogConfirm] = useState(false);
     const area = useSelector((state: RootState) => state.formState.areaCode);
-    const sender = useSelector((state: RootState) => state.formState.sender);
-    const method = useSelector((state: RootState) => state.invoiceState.method);
-    const contract = useSelector((state: RootState) => state.contractState.contract);
-    const invoice = useSelector((state: RootState) => state.invoiceState.data);
+    const phoneNumberRef = useRef<TextInput>(null);
+    const aliasRef = useRef<TextInput>(null);
     const dispatch = useDispatch();
+
     useEffect(() => {
-        if (sender && method === sender.method) {
-            const senderDigits = sender.sender;
+        if (method.method) {
+            setValue('alias', method.method.name);
+            const senderDigits = method.method.sender;
             const firstFourDigits = senderDigits.slice(0, 4);
             const remainingDigits = senderDigits.slice(4);
 
             dispatch(setAreaCode(firstFourDigits));
-            setValue('phoneNumber', remainingDigits); // Set initial phone number value
+            setValue('phoneNumber', remainingDigits);
         }
-    }, [sender, method, setValue, dispatch]);
-    
+    }, [method.method]);
 
     const toggleDialog = () => {
         setShowDialog(!showDialog);
     };
 
     const onSubmit = async (data: any) => {
-        const formValidate = {
-            "bank": null,
-            "amount": 1096,
-            "reference": data.referenceNumber,
+        setShowLoading(true);
+
+        const form = {
             "sender": `${area}${data.phoneNumber}`,
+            "name": data.alias,
+            "email": null,
             "method": 1,
-            "date": "2024-05-30"
         };
 
-        console.log('====================================');
-        console.log(formValidate);
-        console.log('====================================');
+        const response = editMethods(method.method.id, form);
 
+        response.then((resp: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('success');
+        }).catch((err: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('error');
+        });
+    };
+
+    const deleteMethodUser = () => {
+        setShowDialogConfirm(true);
+    }
+
+    const handleDeleteConfirm = async () => {
+        setShowDialogConfirm(false);
         setShowLoading(true);
         try {
-            const responseValidate = await paymentValidate(formValidate);
-
-            console.log('aqui vali====================================');
-            console.log(responseValidate);
-            console.log('====================================');
-
-            if ('error' in responseValidate) {
-                console.log(responseValidate.error);
-                setNotificationType('error');
-            } else if (responseValidate.data && responseValidate.data.error) {
-                console.log(responseValidate.data.error);
-                setNotificationType('error');
-            } else {
-                console.log('Payment validation successful');
-               const formPay={ 
-                payment: [
-                    {
-                      bank: null,
-                      method: 1,
-                      reference: data.referenceNumber,
-                      amount: responseValidate.monto,
-                      amount_bs: Number('1096'),
-                      sender: `${area}${data.phoneNumber}`,
-                      date: '2024-05-30',
-                      contract:contract ,
-                      payment_invoices: [
-                        {
-                          invoice: invoice.id,
-                          amount: responseValidate.monto,
-                        },
-                      ],
-                    },
-                  ],
-                }
-              
-             setNotificationType('success');
-
-            }
+            await deleteMethod(method.method.id); // Llama al servicio de eliminación
             setShowLoading(false);
             setShowNotification(true);
-
-        } catch (error) {
-            console.log(error);
+            setNotificationType('success');
+        } catch (err) {
+            setShowLoading(false);
+            setShowNotification(true);
             setNotificationType('error');
-            setShowLoading(false);
-            setShowNotification(true);
         }
     };
 
@@ -117,7 +96,7 @@ const MethodPm = () => {
         <View style={styles.frameParent}>
             {showLoading && <LoadingComponent isLoading={showLoading} />}
             <View style={styles.reportaTuPagoParent}>
-                <Text style={[styles.reportaTuPago, styles.iniciarSesinTypo]}>Reporta tu pago</Text>
+                <Text style={[styles.reportaTuPago, styles.iniciarSesinTypo]}>Cuenta Afiliada</Text>
                 <View style={styles.formTelefonoParent}>
                     <View>
                         <Text style={[styles.nDeTelfono, styles.textTypo]}>Nº de teléfono</Text>
@@ -146,12 +125,13 @@ const MethodPm = () => {
                                     />
                                 </View>
                             </TouchableOpacity>
-                            <Controller
-                                control={control}
-                                name="phoneNumber"
-                                render={({ field: { onChange, onBlur, value } }) => (
-                                    <View style={[styles.wrapper, styles.wrapperBorder]}>
+                            <TouchableOpacity style={[styles.wrapper, styles.wrapperBorder]} onPress={() => phoneNumberRef.current?.focus()}>
+                                <Controller
+                                    control={control}
+                                    name="phoneNumber"
+                                    render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
+                                            ref={phoneNumberRef}
                                             style={styles.text}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
@@ -160,88 +140,62 @@ const MethodPm = () => {
                                             placeholderTextColor="#fff"
                                             keyboardType="numeric"
                                             maxLength={7}
-
                                         />
-                                    </View>
-                                )}
-                            />
-                            
+                                    )}
+                                />
+                            </TouchableOpacity>
                         </View>
                         {errors.phoneNumber && (
-              <Text style={styles.errorText}>{(errors.phoneNumber as any).message}</Text>
-            )}
+                            <Text style={styles.errorText}>{(errors.phoneNumber as any).message}</Text>
+                        )}
                     </View>
                     <View style={styles.formUsuario}>
-                        <Text style={[styles.nDeTelfono, styles.textTypo]}>Nº de referencia</Text>
-                        <Controller
-                            control={control}
-                            name="referenceNumber"
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <View style={[styles.zathit17Wrapper, styles.wrapperBorder]}>
+                        <Text style={[styles.nDeTelfono, styles.textTypo]}>Alias</Text>
+                        <TouchableOpacity style={[styles.zathit17Wrapper, styles.wrapperBorder]} onPress={() => aliasRef.current?.focus()}>
+                            <Controller
+                                control={control}
+                                name="alias"
+                                render={({ field: { onChange, onBlur, value } }) => (
                                     <TextInput
+                                        ref={aliasRef}
                                         style={styles.text}
                                         onBlur={onBlur}
                                         onChangeText={onChange}
                                         value={value}
-                                        placeholder="000000"
+                                        placeholder="Alias"
                                         placeholderTextColor="#fff"
-                                        keyboardType="numeric"
-                                        maxLength={6}
-
+                                        maxLength={30}
                                     />
-                                </View>
-                            )}
-                        />
-                    </View>
-                    {errors.referenceNumber && (
-              <Text style={styles.errorText}>{(errors.referenceNumber as any).message}</Text>
-            )}
-                </View>
-                <View style={styles.formUsuario}>
-                    <View style={styles.registrarDatos}>
-                        <View style={styles.iconosSelectParent}>
-                            <CheckBox
-                                value={showAlias}
-                                onValueChange={setShowAlias}
+                                )}
                             />
-                            <Text style={[styles.registrarDatosDe, styles.textTypo]}>Registrar datos de pago</Text>
-                        </View>
-                        {showAlias && (
-                            <View style={styles.formUsuario}>
-                                <Controller
-                                    control={control}
-                                    name="alias"
-                                    render={({ field: { onChange, onBlur, value } }) => (
-                                        <View style={[styles.aliasWrapper, styles.wrapperBorder]}>
-                                            <TextInput
-                                                style={styles.text}
-                                                onBlur={onBlur}
-                                                onChangeText={onChange}
-                                                value={value}
-                                                placeholder="Alias"
-                                                placeholderTextColor="#fff"
-                                            />
-                                        </View>
-                                    )}
-                                />
-                            </View>
+                        </TouchableOpacity>
+                        {errors.alias && (
+                            <Text style={styles.errorText}>{(errors.alias as any).message}</Text>
                         )}
                     </View>
                 </View>
             </View>
             <View style={styles.botonesBotnPrincipalParent}>
                 <TouchableOpacity style={[styles.botonesBotnPrincipal, styles.botonesFlexBox]} onPress={handleSubmit(onSubmit)}>
-                    <Text style={[styles.iniciarSesin, styles.iniciarSesinTypo]}>Reportar pago</Text>
+                    <Text style={[styles.iniciarSesin, styles.iniciarSesinTypo]}>Editar Método</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.botonesBotnSegundario} onPress={deleteMethodUser}>
+                    <Text style={styles.iniciarSesin}>Eliminar Método</Text>
                 </TouchableOpacity>
             </View>
-
             <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
-                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Home"} />}
-                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)}  message={"No pudimos encontrar el pago"}/>}
+                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Operación exitosa"} route={"Afiliacion"} />}
+                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"Se ha producido un error"} />}
             </DialogNotificationComponent>
             <DialogComponent visible={showDialog} onClose={toggleDialog}>
-                <CardPhones onClose={()=>setShowDialog(false)}/>
+                <CardPhones onClose={() => setShowDialog(false)} />
             </DialogComponent>
+            <DialogConfirm 
+                visible={showDialogConfirm}
+                onClose={() => setShowDialogConfirm(false)}
+                onConfirm={handleDeleteConfirm} // Pasa la función que maneja la confirmación
+                message={"¿Estás seguro de eliminar éste método de pago?"} />
+                
         </View>
     );
 };
@@ -254,7 +208,7 @@ const styles = StyleSheet.create({
     errorText: {
         color: "red",
         fontSize: 12,
-      },
+    },
     textTypo: {
         fontFamily: "Roboto-Regular",
         textAlign: "left",
@@ -356,13 +310,29 @@ const styles = StyleSheet.create({
     botonesBotnPrincipalParent: {
         marginTop: percentHeight(2),
         marginBottom: percentHeight(2),
-        alignSelf: "stretch",
+        width: percentWidth(90),
+        alignSelf: "center",
         alignItems: "center"
     },
     frameParent: {
         width: "100%",
         alignItems: "center",
-    }
+        paddingTop: percentHeight(20)
+    },
+    botonesBotnSegundario: {
+        alignSelf: "stretch",
+        borderRadius: 8,
+        borderStyle: "solid",
+        borderColor: "#fafafa",
+        borderWidth: 2,
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: percentWidth(4),
+        paddingVertical:  percentHeight(1.5),
+        marginTop:  percentHeight(1.5)
+        }
 });
 
-export default MethodPm;
+export default EditPagoMovilForm;

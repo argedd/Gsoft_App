@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RootStackParamListRoute } from '../../navigations/routes/app_routes';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BackButton, MenuItem } from '../../components/components';
 import menuCilenteItems, { ClienteMenuItem } from '../../data/clienteMenuItems';
 import LayoutPrimary from '../../components/layouts/layout_primary';
@@ -9,7 +9,6 @@ import LinearGradient from "react-native-linear-gradient";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { logout } from '../../services/auth/auth_service';
 import { getData } from '../../utils/asyncStorage/asyncStorage';
-import { percentHeight, percentWidth } from '../../utils/dimensions/dimensions';
 
 type ClientViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -17,7 +16,7 @@ interface Props {
   navigation: ClientViewNavigationProp;
 }
 
-const ClientView: React.FC<Props> = ({ navigation }) => {
+const ClientView:  React.FC<Props> =  ({ navigation }) => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -30,7 +29,8 @@ const ClientView: React.FC<Props> = ({ navigation }) => {
     userData();
   }, []);
 
-  const handleLogout = async () => {
+
+  const handleLogout = async() => {
     await logout();
     navigation.navigate("Login");
   };
@@ -42,7 +42,7 @@ const ClientView: React.FC<Props> = ({ navigation }) => {
       onPress={() => navigation.navigate(item.route)}
     />
   );
-
+  
   const ClientComponent = () => (
     <View style={styles.container}>
       <BackButton title={'Mi Cuenta'} />
@@ -53,16 +53,14 @@ const ClientView: React.FC<Props> = ({ navigation }) => {
         useAngle={true}
         angle={180}
       >
+       
         <MaterialCommunityIcons name="account-circle-outline" size={60} color="#fff" />
+  
         <View style={styles.frameParent}>
           <View style={styles.gabrielaRamosWrapper}>
-            <Text style={[styles.gabrielaRamos, styles.j258722635FlexBox]}>
-              {user ? `${user.name} ${user.last_name}` : 'Cargando...'}
-            </Text>
+            <Text style={[styles.gabrielaRamos, styles.j258722635FlexBox]}>{user ? `${user.name} ${user.last_name}` : 'Cargando...'}</Text>
           </View>
-          <Text style={[styles.j258722635, styles.j258722635FlexBox]}>
-            {user ? user.identification : 'Cargando...'}
-          </Text>
+          <Text style={[styles.j258722635, styles.j258722635FlexBox]}>{user ? user.identification : 'Cargando...'}</Text>
         </View>
       </LinearGradient>
       <FlatList
@@ -77,7 +75,6 @@ const ClientView: React.FC<Props> = ({ navigation }) => {
       </View>
     </View>
   );
-
   return (
     <LayoutPrimary>
       <ClientComponent />
@@ -90,19 +87,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   logoutContainer: {
-    alignItems: 'center',
-    marginVertical: percentHeight(5),
+    alignItems: 'center',  // Centra el contenido horizontalmente
+    marginVertical: 30,
   },
   logoutButton: {
     borderRadius: 8,
-    paddingHorizontal: percentWidth(4),
-    paddingVertical: percentHeight(1.5),
+    paddingHorizontal: 32,
+    paddingVertical: 12,
     borderStyle: "solid",
     borderColor: "#fafafa",
     borderWidth: 2,
-    width: percentWidth(90),
+    width: "80%",
     alignItems: "center",
     justifyContent: "center",
+
   },
   logoutButtonText: {
     color: '#fff',
@@ -119,16 +117,16 @@ const styles = StyleSheet.create({
     color: "#fafafa"
   },
   vectorIcon: {
-    width: percentWidth(11),
-    height: percentHeight(5.5)
+    width: 44,
+    height: 44
   },
   iconosUsuario: {
-    width: percentWidth(16.5),
-    height: percentHeight(8.5),
-    padding: percentHeight(2)
+    width: 66,
+    height: 66,
+    padding: 11
   },
   gabrielaRamos: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
     fontFamily: "Roboto-Bold"
   },
@@ -136,27 +134,27 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   j258722635: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Roboto-Regular",
-    marginTop: percentHeight(1.5)
+    marginTop: 6
   },
   frameParent: {
-    marginLeft: percentWidth(2.25),
-    // paddingTop: percentHeight(7.5),
-    // paddingBottom: percentHeight(7.5),
+    marginLeft: 9,
+    paddingTop:30,
+    paddingBottom:30,
   },
   iconosUsuarioParent: {
     borderRadius: 16,
     borderStyle: "solid",
     borderColor: "#fafafa",
     borderWidth: 0.5,
-    width: percentWidth(90),
-    paddingHorizontal: percentWidth(4),
-    paddingVertical: percentHeight(2),
+    width: '90%',  // Ajusta el ancho al 90% del contenedor padre
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     backgroundColor: "transparent",
-    marginTop: percentHeight(15),
-    marginBottom: percentHeight(5),
-    alignSelf: 'center'
+    marginTop: 60,
+    marginBottom: 80,
+    alignSelf: 'center'  // Centra el componente horizontalmente
   }
 });
 

@@ -219,8 +219,8 @@ const MethodZelle = () => {
             </View>
 
             <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
-                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} />}
-                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} />}
+            {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Home"} />}
+                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)}  message={"No pudimos encontrar el pago"}/>}
             </DialogNotificationComponent>
 
             <DialogComponent visible={showDialog} onClose={toggleDialog}>

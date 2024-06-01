@@ -60,3 +60,38 @@ export const zelleSchema = Yup.object().shape({
   alias: Yup.string()
 
 });
+
+
+export const pagoMovilRegSchema = Yup.object().shape({
+  areaCode: Yup.string(),
+    phoneNumber: Yup.string()
+  .required('Teléfono es Requerido.')
+    .matches(/^[0-9]+$/, 'eléfono debe ser numéric0')
+    .max(7, 'la Operadora debe tener maximo 7 dígitos')
+    .min(7, 'la Operadora debe tener maximo 7 dígitos'),
+  alias: Yup.string()
+  .required('Alias es Requerido')
+
+});
+
+export const trfRegSchema = Yup.object().shape({
+  accountNumber: Yup.string()
+  .required('Cuenta es Requerida.')
+  .matches(/^[0-9]+$/, 'la cuenta debe ser numérica')
+  .min(6, 'Nro de Cuenta debe tener al menos 6 dígitos'),
+  alias: Yup.string()
+  .required('Alias es Requerido')
+
+});
+
+
+export const zelleRegSchema = Yup.object().shape({
+  titular: Yup.string()
+  .required('Titular es Requerido.'),
+  alias: Yup.string()
+  .required('Alias es Requerido'),
+  email: Yup.string()
+  .email('Correo electrónico no es válido.')
+  .required('Correo electrónico es Requerido.')
+});
+
