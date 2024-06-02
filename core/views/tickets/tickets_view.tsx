@@ -25,9 +25,7 @@ const TicketsView: React.FC<Props> = ({ navigation }) => {
       const fetchMethods = async () => {
         try {
           const tickets = await getTickets();
-          console.log('====================================');
-          console.log(tickets);
-          console.log('====================================');
+
           setTickets(tickets.results);
         } catch (error) {
           console.error('Error al obtener tickets del cliente:', error);

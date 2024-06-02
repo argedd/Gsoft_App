@@ -34,4 +34,16 @@ export interface RootTickets {
     created_at: string
     updated_at: string
   }
+
+export type RootIssues = Issue[]
+
+export interface Issue {
+  id: number
+  name: string
+  department: number
+  department_name: string
+  status: boolean
+  created_by: number
+  created_by_name: string
+}
   

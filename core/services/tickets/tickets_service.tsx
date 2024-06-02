@@ -1,4 +1,4 @@
-import { RootTickets } from "../../data/interfaces/tickets_interface";
+import { RootIssues, RootTickets } from "../../data/interfaces/tickets_interface";
 import { gsoftAPI } from "../../utils/interceptor/interceptor";
 
 const api = gsoftAPI;
@@ -19,11 +19,23 @@ const saveTickets = async (body:any): Promise<any> => {
 };
 
 
+const getIssues = async (department:any): Promise<RootIssues> => {
+  try {
+    const response = await api.get<RootIssues>(`/departments/issues/?department_id=${department}`);
+
+    return response.data; // Devuelve solo los datos de la respuesta
+  } catch (error) {
+    throw new Error('Error al obtener asuntos: ' + error);
+  }
+};
+
+
 
 
 
 export{
     getTickets,
     saveTickets,
+    getIssues,
 
 }

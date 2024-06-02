@@ -1,157 +1,272 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
-import {
-  FlatList,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { BackButton } from '../../../../components/components';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { BackButton, DialogComponent, ErrorComponent, LoadingComponent, SuccesComponent } from '../../../../components/components';
 import LayoutPrimary from '../../../../components/layouts/layout_primary';
 import { RootStackParamListRoute } from '../../../../navigations/routes/app_routes';
-import LinearGradient from 'react-native-linear-gradient';
+import { percentWidth, percentHeight } from '../../../../utils/dimensions/dimensions';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { ticketsSchema } from '../../../../utils/validators/tickets_validator';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm, Controller } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../../utils/redux/store';
+import CardDepartments from './components/card_departments';
+import CardIssues from './components/card_issues';
+import { getData } from '../../../../utils/asyncStorage/asyncStorage';
+import { saveTickets } from '../../../../services/tickets/tickets_service';
+import { resetForm } from '../../../../utils/redux/actions/ticketActions';
+import DialogNotificationComponent from '../../../../components/dialogs/dialogNotification';
 
-type ConfiguracionViewNavigationProp =
-  StackNavigationProp<RootStackParamListRoute>;
+type ConfiguracionViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
 interface Props {
   navigation: ConfiguracionViewNavigationProp;
 }
 
 const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
-  const RegistroComponent = () => (
-    <View style={styles.containerItem}>
-      <View style={styles.detallaLaIncidenciaParent}>
-        <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
-          Detalla la incidencia
-        </Text>
-        <View style={[styles.nContratoParent, styles.parentFlexBox1]}>
-          <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
-            Nº Contrato
-          </Text>
-          <Text style={[styles.text, styles.textTypo]}>12345</Text>
-        </View>
-        <LinearGradient
-          style={[styles.vectorParent, styles.parentFlexBox]}
-          locations={[0.04, 1]}
-          colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']}
-          useAngle={true}
-          angle={180}>
-          <Image
-            style={styles.vectorIcon}
-            resizeMode="cover"
-            source={require('../../../../assets/icons/notificacion/advertencia.png')}
-          />
-          <View style={styles.subeUnaImagenParent}>
-            <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>
-              Sube una imagen
-            </Text>
-            <Text
-              style={[
-                styles.formatosAdmitidosJpg,
-                styles.subeUnaImagenFlexBox,
-              ]}>
-              Formatos admitidos: JPG y PNG
-            </Text>
-          </View>
-        </LinearGradient>
-        <View style={styles.parentFlexBox}>
-          <View></View>
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogContent, setDialogContent] = useState<React.ReactNode>(null);
+  const depto = useSelector((state: RootState) => state.ticketState.department);
+  const iss = useSelector((state: RootState) => state.ticketState.issue);
+  const contract = useSelector((state:RootState) => state.contractState);
+  const [showLoading, setShowLoading] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationType, setNotificationType] = useState<null | 'success' | 'error'>(null);
+  const dispatch = useDispatch();
 
-          <View style={styles.formSeleccinMetodosDePag}>
-            <Text style={[styles.metodoDePago, styles.text1Typo]}>
-              Departamento
+  const { control, handleSubmit, formState: { errors }, setValue } = useForm({
+    resolver: yupResolver(ticketsSchema),
+    shouldUnregister: false
+  });
+
+  useEffect(() => {
+    setValue('department', depto.name);
+    setValue('issue', iss.name);
+  }, [depto,iss]);
+  
+
+  
+  const toggleDialog = () => {
+    setShowDialog(!showDialog);
+  };
+
+  const openDialog = (content: React.ReactNode) => {
+    setDialogContent(content);
+    toggleDialog();
+  };
+
+  const onSubmit = async (data: any) => {
+
+    setShowLoading(true);
+
+   const dataUser = await getData('user');
+   const form = {
+      "client": dataUser.client.id,
+      "contract": contract.contract,
+      "issue": iss.id,
+      "description":data.description,
+      "office": depto.id,
+      "files": []
+  }
+
+  console.log('====================================');
+  console.log(form);
+  console.log('====================================');
+
+
+    try {
+      const response = await saveTickets(form);
+      setShowLoading(false);
+      setShowNotification(true);
+      dispatch(resetForm());
+      setNotificationType('success');
+  
+    } catch (error) {
+      setShowLoading(false);
+    }
+  };
+
+  const RegistroComponent = () => {
+    const [comment, setComment] = useState('');
+
+    return (
+      <View style={styles.containerItem}>
+         {showLoading && <LoadingComponent isLoading={showLoading} />}
+
+        <View style={styles.detallaLaIncidenciaParent}>
+          <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
+            Detalla la incidencia
+          </Text>
+          <View style={[styles.nContratoParent, styles.parentFlexBox1]}>
+            <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
+              Nº Contrato
             </Text>
-            <View
-              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}>
-              <Text style={[styles.text1, styles.text1Typo]}>Departamento</Text>
-            </View>
+            <Text style={[styles.text, styles.textTypo]}>12345</Text>
           </View>
-          <View style={styles.formSeleccinMetodosDePag}>
-            <Text style={[styles.metodoDePago, styles.text1Typo]}>Asunto</Text>
-            <View
-              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}>
-              <Text style={[styles.text1, styles.text1Typo]}>Asunto</Text>
-            </View>
-          </View>
-        </View>
-        <View style={[styles.formUsuarioParent, styles.parentFlexBox1]}>
-          <View>
-            <Text style={[styles.nDeTelfono, styles.text1Typo]}>
-              Comentario
-            </Text>
-            <View style={[styles.zathit17Wrapper, styles.parentWrapperBorder]}>
-              <Text style={[styles.intentoHacerEl, styles.text1Typo]}>
-                intento hacer el pago pero el sistema no lo reconoce
+          <TouchableOpacity>
+          <LinearGradient
+            style={[styles.vectorParent, styles.parentFlexBox]}
+            locations={[0.04, 1]}
+            colors={['#e20a17', '#1e1e1e']}
+            useAngle={true}
+            angle={180}
+          >
+            <Image
+              style={styles.vectorIcon}
+              resizeMode="cover"
+              source={require('../../../../assets/icons/home/multimedia.png')}
+            />
+            <View style={styles.subeUnaImagenParent}>
+              <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>
+                Sube una imagen
+              </Text>
+              <Text
+                style={[
+                  styles.formatosAdmitidosJpg,
+                  styles.subeUnaImagenFlexBox,
+                ]}
+              >
+                Formatos admitidos: JPG y PNG
               </Text>
             </View>
+          </LinearGradient>
+          </TouchableOpacity>
+         
+          <View style={styles.parentFlexBox}>
+            <Controller
+              name="department"
+              control={control}
+              defaultValue={depto.name}
+              render={({ field: { onChange, value } }) => (
+                <TouchableOpacity style={styles.formSeleccinMetodosDePag} onPress={() => openDialog(<CardDepartments onClose={() => setShowDialog(false)}/>)}>
+                  <Text style={[styles.metodoDePago, styles.text1Typo]}>
+                    Departamento
+                  </Text>
+                  <View style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}>
+                    <Text style={[styles.text1, styles.text1Typo]}>{value}</Text>
+                    <Icon name="keyboard-arrow-down" size={24} color="#fff" />
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+             {errors.department && (
+            <Text style={styles.errorText}>{(errors.department as any).message}</Text>
+          )}
+            <Controller
+              name="issue"
+              control={control}
+              defaultValue={iss.name}
+              render={({ field: { onChange, value } }) => (
+                <TouchableOpacity style={styles.formSeleccinMetodosDePag} onPress={() => openDialog(<CardIssues onClose={() => setShowDialog(false)}/>)}>
+                  <Text style={[styles.metodoDePago, styles.text1Typo]}>Asunto</Text>
+                  <View style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}>
+                    <Text style={[styles.text1, styles.text1Typo]}>{value}</Text>
+                    <Icon name="keyboard-arrow-down" size={24} color="#fff" />
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+              {errors.issue && (
+            <Text style={styles.errorText}>{(errors.issue as any).message}</Text>
+          )}
           </View>
-          <Text style={[styles.hasta1000Caracteres, styles.text1Typo]}>
-            Hasta 1000 caracteres
-          </Text>
+          <View style={[styles.formUsuarioParent, styles.parentFlexBox1]}>
+            <View>
+              <Text style={[styles.nDeTelfono, styles.text1Typo]}>
+                Comentario
+              </Text>
+              <Controller
+                name="description"
+                control={control}
+                defaultValue=""
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={[styles.zathit17Wrapper, styles.parentWrapperBorder, { height: Math.max(80, value.split('\n').length * 20) }]}
+                    multiline
+                    maxLength={1000}
+                    value={value}
+                    onChangeText={text => {
+                      onChange(text);
+                      setComment(text);
+                    }}
+                  />
+                )}
+              />
+            </View>
+            {errors.description && (
+            <Text style={styles.errorText}>{(errors.description as any).message}</Text>
+          )}
+            <Text style={[styles.hasta1000Caracteres, styles.text1Typo]}>
+              {`${comment.length}/1000 caracteres`}
+            </Text>
+          </View>
         </View>
+        <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.iniciarSesin}>Crear nuevo ticket</Text>
+        </TouchableOpacity>
+        <DialogComponent visible={showDialog} onClose={toggleDialog}>
+          {dialogContent}
+        </DialogComponent>
+
+        <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
+                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Se ha generado un ticket para que puedas ver el avance de la solicitud"} route={"Tickets"} />}
+                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"Se ha producido un error"} />}
+            </DialogNotificationComponent>
       </View>
-      <View style={styles.botonesBotnPrincipal}>
-        <Text style={styles.iniciarSesin}>Crear nuevo ticket</Text>
-      </View>
-    </View>
-      
-    
-  );
+    );
+  };
+
   return (
     <LayoutPrimary>
-        <ScrollView style={styles.container}>
-    <BackButton title={'Afiliación de cuentas'} />
-        <RegistroComponent/>
-</ScrollView>
+      <BackButton title={'Nuevo Ticket'} />
+
+      <ScrollView style={styles.container}>
+        <RegistroComponent />
+      </ScrollView>
     </LayoutPrimary>
-  
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // marginTop: 50,
   },
-  containerItem:{
-    alignContent:'center',
-    alignItems:'center',
+  containerItem: {
+    alignContent: 'center',
+    alignItems: 'center',
   },
-
   iniciarSesin: {
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "Inter-SemiBold",
-    color: "#fafafa",
-    textAlign: "left"
+    fontSize: percentWidth(4),
+    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
+    color: '#fafafa',
+    textAlign: 'left',
   },
   botonesBotnPrincipal: {
-    borderRadius: 8,
-    backgroundColor: "#e20a17",
-    width: "90%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    marginTop:8,
+    borderRadius: percentWidth(2),
+    backgroundColor: '#e20a17',
+    width: '90%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: percentWidth(8),
+    paddingVertical: percentHeight(1.5),
+    marginTop: percentHeight(2),
+    marginBottom: percentHeight(2),
   },
   textTypo: {
     textAlign: 'left',
-    fontSize: 16,
+    fontSize: percentWidth(4),
   },
   parentFlexBox1: {
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: percentHeight(2),
   },
   parentFlexBox: {
     alignSelf: 'stretch',
-    marginTop: 8,
+    marginTop: percentHeight(2),
   },
   subeUnaImagenFlexBox: {
     textAlign: 'center',
@@ -163,18 +278,15 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   parentWrapperBorder: {
-    paddingVertical: 12,
+    paddingVertical: percentHeight(1.5),
     borderWidth: 0.5,
     borderColor: '#fafafa',
-    borderRadius: 8,
+    borderRadius: percentWidth(2),
     flexDirection: 'row',
-    paddingHorizontal: 16,
+    paddingHorizontal: percentWidth(4),
     alignItems: 'center',
     borderStyle: 'solid',
-  },
-  vectorIconLayout: {
-    height: 7,
-    width: 12,
+    color:'#fff'
   },
   detallaLaIncidencia: {
     fontWeight: '500',
@@ -185,105 +297,91 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Roboto-Bold',
     color: '#fafafa',
-    marginTop: 10,
+    marginTop: percentHeight(2.5),
     fontWeight: '600',
   },
   nContratoParent: {
-    marginTop: 8,
+    marginTop: percentHeight(2),
     alignItems: 'center',
   },
   vectorIcon: {
-    width: 38,
-    height: 38,
+    width: percentWidth(9.5),
+    height: percentWidth(9.5),
   },
   subeUnaImagen: {
-    fontSize: 17,
+    fontSize: percentWidth(4.25),
     fontFamily: 'Inter-SemiBold',
     fontWeight: '600',
   },
   formatosAdmitidosJpg: {
-    fontSize: 13,
+    fontSize: percentWidth(3.25),
     fontFamily: 'Inter-Regular',
-    marginTop: 8.4,
+    marginTop: percentHeight(2.1),
   },
   subeUnaImagenParent: {
-    marginTop: 16.8,
+    marginTop: percentHeight(4.2),
     alignItems: 'center',
   },
   vectorParent: {
-    borderRadius: 17,
-    height: 141,
-    padding: 17,
+    borderRadius: percentWidth(4.25),
+    height: percentHeight(17.75),
+    padding: percentWidth(4.25),
     backgroundColor: 'transparent',
     alignItems: 'center',
   },
   nDeTelfono: {
-    fontSize: 14,
+    fontSize: percentWidth(3.5),
     fontFamily: 'Roboto-Regular',
   },
   text1: {
-    fontSize: 16,
+    fontSize: percentWidth(4),
     fontFamily: 'Roboto-Regular',
   },
-  vectorIcon1: {
-    marginLeft: 10,
-  },
-  parent: {
-    width: 90,
-  },
-  wrapper: {
-    marginLeft: 4,
-  },
-  frameParent: {
-    flexDirection: 'row',
-    width: 278,
-    marginTop: 8,
-  },
   zathit17Wrapper: {
-    width: 278,
-    marginTop: 8,
-  },
-  formUsuario: {
-    marginTop: 16,
+    width: percentWidth(80),
+    marginTop: percentHeight(2),
   },
   metodoDePago: {
     opacity: 0,
-    fontSize: 14,
+    fontSize: percentWidth(3.5),
     fontFamily: 'Roboto-Regular',
   },
   metodoDePagoParent: {
     justifyContent: 'space-between',
     alignSelf: 'stretch',
-    marginTop: 8,
   },
   formSeleccinMetodosDePag: {
-    marginTop: 16,
-    width: 278,
+    marginTop: percentHeight(1),
+    width: percentWidth(80),
   },
   intentoHacerEl: {
-    fontSize: 16,
+    fontSize: percentWidth(4),
     fontFamily: 'Roboto-Regular',
   },
   hasta1000Caracteres: {
-    fontSize: 12,
-    width: 121,
-    height: 14,
-    marginTop: 8,
+    fontSize: percentWidth(3),
+    width: percentWidth(50),
+    marginTop: percentHeight(2),
   },
   formUsuarioParent: {
     alignItems: 'flex-end',
-    marginTop: 8,
   },
   detallaLaIncidenciaParent: {
-    borderRadius: 16,
+    borderRadius: percentWidth(4),
     backgroundColor: 'rgba(171, 170, 170, 0.26)',
     borderColor: '#fff',
     borderWidth: 0.4,
     width: '90%',
-    paddingVertical: 32,
-    paddingHorizontal: 16,
+    paddingVertical: percentHeight(4),
+    paddingHorizontal: percentWidth(4),
     borderStyle: 'solid',
     alignItems: 'center',
   },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 8,
+  },
 });
+
 export default RegistroTicketView;

@@ -4,11 +4,13 @@ import {configureStore} from '@reduxjs/toolkit'
 import contractReducer from './reducers/contractReducer';
 import invoiceReducer from './reducers/invoiceReducer';
 import formReducer from './reducers/formReducer';
+import ticketReducer from './reducers/ticketReducer';
 
 const rootReducer = combineReducers({
   contractState: contractReducer,
   invoiceState:invoiceReducer,
   formState:formReducer,
+  ticketState:ticketReducer,
 });
 
 const store = configureStore({

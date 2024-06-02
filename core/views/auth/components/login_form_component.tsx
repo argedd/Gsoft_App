@@ -1,107 +1,191 @@
-import React from 'react';
+// components/LoginComponent.tsx
+import React, { useRef, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { loginSchema } from '../../../utils/validators/validations_forms';
+import { login } from '../../../services/auth/auth_service';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-
-import LinearGradient from 'react-native-linear-gradient';
-import { percentWidth, percentHeight } from '../../../utils/dimensions/dimensions';
-import { BackButton } from '../../../components/components';
-import LayoutPrimary from '../../../components/layouts/layout_primary';
 import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
+import LoadingComponent from '../../../components/loading/loading';
+import { DialogComponent, ErrorComponent } from '../../../components/components';
+import DialogRecuperar from './dialog_recuperar';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../utils/redux/store';
+import DialogNotificationComponent from '../../../components/dialogs/dialogNotification';
+import CardCedula from './card_cedula';
+import { percentWidth } from '../../../utils/dimensions/dimensions';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { resetForm } from '../../../utils/redux/actions/invoiceActions';
 
-type ConfiguracionViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
+type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
 interface Props {
-  navigation: ConfiguracionViewNavigationProp;
+  navigation: NavigationProp;
 }
 
-const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
-  const RegistroComponent = () => (
-    <View style={styles.containerItem}>
-      <View style={styles.detallaLaIncidenciaParent}>
-        <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
-          Detalla la incidencia
-        </Text>
-        <View style={[styles.nContratoParent, styles.parentFlexBox1]}>
-          <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
-            Nº Contrato
-          </Text>
-          <Text style={[styles.text, styles.textTypo]}>12345</Text>
-        </View>
-        <LinearGradient
-          style={[styles.vectorParent, styles.parentFlexBox]}
-          locations={[0.04, 1]}
-          colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']}
-          useAngle={true}
-          angle={180}
-        >
-          <Image
-            style={styles.vectorIcon}
-            resizeMode="cover"
-            source={require('../../../assets/icons/notificacion/advertencia.png')}
-          />
-          <View style={styles.subeUnaImagenParent}>
-            <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>
-              Sube una imagen
-            </Text>
-            <Text
-              style={[
-                styles.formatosAdmitidosJpg,
-                styles.subeUnaImagenFlexBox,
-              ]}
-            >
-              Formatos admitidos: JPG y PNG
-            </Text>
-          </View>
-        </LinearGradient>
-        <View style={styles.parentFlexBox}>
-          <View></View>
-          <View style={styles.formSeleccinMetodosDePag}>
-            <Text style={[styles.metodoDePago, styles.text1Typo]}>
-              Departamento
-            </Text>
-            <View
-              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}
-            >
-              <Text style={[styles.text1, styles.text1Typo]}>Departamento</Text>
-            </View>
-          </View>
-          <View style={styles.formSeleccinMetodosDePag}>
-            <Text style={[styles.metodoDePago, styles.text1Typo]}>Asunto</Text>
-            <View
-              style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}
-            >
-              <Text style={[styles.text1, styles.text1Typo]}>Asunto</Text>
-            </View>
-          </View>
-        </View>
-        <View style={[styles.formUsuarioParent, styles.parentFlexBox1]}>
-          <View>
-            <Text style={[styles.nDeTelfono, styles.text1Typo]}>
-              Comentario
-            </Text>
-            <View style={[styles.zathit17Wrapper, styles.parentWrapperBorder]}>
-              <Text style={[styles.intentoHacerEl, styles.text1Typo]}>
-                intento hacer el pago pero el sistema no lo reconoce
-              </Text>
-            </View>
-          </View>
-          <Text style={[styles.hasta1000Caracteres, styles.text1Typo]}>
-            Hasta 1000 caracteres
-          </Text>
-        </View>
-      </View>
-      <View style={styles.botonesBotnPrincipal}>
-        <Text style={styles.iniciarSesin}>Crear nuevo ticket</Text>
-      </View>
-    </View>
-  );
+const LoginComponent: React.FC<Props> = ({ navigation }) => {
+  const [showLoading, setShowLoading] = useState(false);
+  const [showModalRecuperar, setShowModalRecuperar] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationType, setNotificationType] = useState<null | 'success' | 'error'>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const digit = useSelector((state: RootState) => state.formState.digit);
+  const cedulaRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const dispatch = useDispatch();
+
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(loginSchema)
+  });
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleDialog = () => {
+    setShowDialog(!showDialog);
+  };
+
+  const onSubmit = async (data: any) => {
+    setShowLoading(true);
+    const form = {
+      identification: `${digit}${data.cedula}`,
+      password: data.password
+    };
+
+    try {
+      const response = await login(form);
+
+      if (response.token) {
+        setShowLoading(false);
+        dispatch(resetForm());
+        navigation.navigate("Home");
+      } else {
+        setShowLoading(false);
+
+        console.log('Token failed');
+      }
+    } catch (error) {
+      setShowLoading(false);
+      setShowNotification(true);
+      setNotificationType('error');
+    }
+  };
+
   return (
-    <LayoutPrimary>
-      <ScrollView style={styles.container}>
-        <BackButton title={'Afiliación de cuentas'} />
-        <RegistroComponent />
-      </ScrollView>
-    </LayoutPrimary>
+    <View style={styles.container}>
+      {showLoading && <LoadingComponent isLoading={showLoading} />}
+ 
+      <Image style={styles.capa2Icon} resizeMode="cover" source={require("../../../assets/logo_gnetwork.png")} />
+      <View style={styles.bienvenidoParent}>
+        <Text style={[styles.bienvenido, styles.bienvenidoClr]}>Bienvenido</Text>
+        <View style={styles.frameParent}>
+          <View>
+            <View style={[styles.frameGroup, styles.frameGroupSpaceBlock]}>
+              <TouchableOpacity onPress={toggleDialog}>
+                <View style={[styles.parent, styles.wrapperBorder]}>
+                  <Controller
+                    control={control}
+                    name="digito"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <>
+                        <TextInput
+                          style={styles.text}
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={digit}
+                          placeholder="0412"
+                          placeholderTextColor="#fff"
+                          maxLength={4}
+                          selectionColor="red"
+                          editable={false}
+                        />
+                        <Icon name="keyboard-arrow-down" size={24} color="#fff" />
+                      </>
+                    )}
+                  />
+                </View>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={[styles.wrapper, styles.wrapperBorder]} onPress={() => cedulaRef.current?.focus()}>
+                <Controller
+                  control={control}
+                  name="cedula"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      ref={cedulaRef}
+                      style={styles.text}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      placeholder="*******"
+                      placeholderTextColor="#fff"
+                      keyboardType="numeric"
+                      maxLength={8}
+                    />
+                  )}
+                />
+              </TouchableOpacity>
+            </View>
+            {errors.cedula && (
+              <Text style={styles.errorText}>{(errors.cedula as any).message}</Text>
+            )}
+          </View>
+          
+          <TouchableOpacity onPress={() => passwordRef.current?.focus()}>
+            <Controller
+              control={control}
+              name="password"
+              defaultValue=""
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.inputContainer}>
+                  <View style={[styles.contraseaParent, styles.passwordWrapperBorder]}>
+                    <TextInput
+                      ref={passwordRef}
+                      style={[styles.password, styles.passwordTypo]}
+                      placeholder="Contraseña"
+                      placeholderTextColor="#fff"
+                      secureTextEntry={!showPassword}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                    <TouchableOpacity onPress={togglePasswordVisibility}>
+                      <MaterialCommunityIcons
+                        name={showPassword ? "eye-off-outline" : "eye-outline"}
+                        size={24}
+                        color="#fff"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {errors.password && (
+                    <Text style={styles.errorText}>{(errors.password as any).message}</Text>
+                  )}
+                </View>
+              )}
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.iniciarSesinWrapper} onPress={handleSubmit(onSubmit)}>
+          <Text style={[styles.iniciarSesin, styles.buttonTypo]}>Iniciar sesión</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.botonesBotnSegundario} onPress={() => setShowModalRecuperar(true)}>
+          <Text style={styles.iniciarSesin}>Nuevo usuario / olvide contraseña</Text>
+        </TouchableOpacity>
+      </View>
+      <DialogComponent visible={showModalRecuperar} onClose={() => setShowModalRecuperar(false)}>
+        <DialogRecuperar onClose={() => setShowModalRecuperar(false)} />
+      </DialogComponent>
+      <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
+        {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"Usuario y/o clave Invalida"} />}
+      </DialogNotificationComponent>
+      <DialogComponent visible={showDialog} onClose={toggleDialog}>
+        <CardCedula onClose={() => setShowDialog(false)} />
+      </DialogComponent>
+    </View>
   );
 };
 
@@ -109,151 +193,128 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  containerItem: {
-    alignContent: 'center',
-    alignItems: 'center',
+  frameGroup: {
+    flexDirection: "row",
   },
-  iniciarSesin: {
-    fontSize: percentWidth(4),
-    fontWeight: '600',
-    fontFamily: 'Inter-SemiBold',
-    color: '#fafafa',
-    textAlign: 'left',
+  frameGroupSpaceBlock: {
+    width: percentWidth(88),
   },
-  botonesBotnPrincipal: {
-    borderRadius: percentWidth(2),
-    backgroundColor: '#e20a17',
-    width: '90%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: percentWidth(8),
-    paddingVertical: percentHeight(1.5),
-    marginTop: percentHeight(2),
-  },
-  textTypo: {
-    textAlign: 'left',
-    fontSize: percentWidth(4),
-  },
-  parentFlexBox1: {
-    justifyContent: 'center',
-    marginTop: percentHeight(2),
-  },
-  parentFlexBox: {
-    alignSelf: 'stretch',
-    marginTop: percentHeight(2),
-  },
-  subeUnaImagenFlexBox: {
-    textAlign: 'center',
-    color: '#fff',
-  },
-  text1Typo: {
-    fontFamily: 'Roboto-Regular',
-    textAlign: 'left',
-    color: '#fff',
-  },
-  parentWrapperBorder: {
-    paddingVertical: percentHeight(1.5),
+  wrapperBorder: {
     borderWidth: 0.5,
-    borderColor: '#fafafa',
-    borderRadius: percentWidth(2),
-    flexDirection: 'row',
+    borderRadius: 8,
+    borderColor: "#fafafa",
+    flexDirection: "row",
     paddingHorizontal: percentWidth(4),
-    alignItems: 'center',
-    borderStyle: 'solid',
-  },
-  detallaLaIncidencia: {
-    fontWeight: '500',
-    fontFamily: 'Roboto-Medium',
-    color: '#fff',
-    textAlign: 'left',
+    borderStyle: "solid",
+    alignItems: "center",
   },
   text: {
-    fontFamily: 'Roboto-Bold',
-    color: '#fafafa',
-    marginTop: percentHeight(2.5),
-    fontWeight: '600',
+    fontSize: 14,
+    fontFamily: "Roboto-Regular",
+    color: "#fff",
   },
-  nContratoParent: {
-    marginTop: percentHeight(2),
-    alignItems: 'center',
+  parent: {
+    width: percentWidth(23),
   },
-  vectorIcon: {
-    width: percentWidth(9.5),
-    height: percentWidth(9.5),
+  wrapper: {
+    marginLeft: percentWidth(1),
+    flex: 1,
   },
-  subeUnaImagen: {
-    fontSize: percentWidth(4.25),
-    fontFamily: 'Inter-SemiBold',
-    fontWeight: '600',
+  bienvenidoClr: {
+    color: "#fafafa",
+    fontWeight: "600",
   },
-  formatosAdmitidosJpg: {
-    fontSize: percentWidth(3.25),
-    fontFamily: 'Inter-Regular',
-    marginTop: percentHeight(2.1),
+  passwordTypo: {
+    fontSize: 16,
+    textAlign: "left",
   },
-  subeUnaImagenParent: {
-    marginTop: percentHeight(4.2),
-    alignItems: 'center',
+  buttonTypo: {
+    fontSize: 16,
+    textAlign: "center",
   },
-  vectorParent: {
-    borderRadius: percentWidth(4.25),
-    height: percentHeight(17.75),
-    padding: percentWidth(4.25),
-    backgroundColor: 'transparent',
-    alignItems: 'center',
+  passwordWrapperBorder: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+    borderWidth: 0.5,
+    borderColor: "#fafafa",
+    borderStyle: "solid",
+    flexDirection: "row",
+    width: percentWidth(88),
+    borderRadius: 8,
+    alignItems: "center",
+    height: 50, // Ensure the height is enough for easy clicking
   },
-  nDeTelfono: {
-    fontSize: percentWidth(3.5),
-    fontFamily: 'Roboto-Regular',
+  bienvenido: {
+    fontSize: 26,
+    fontFamily: "Roboto-Bold",
+    textAlign: "left",
   },
-  text1: {
-    fontSize: percentWidth(4),
-    fontFamily: 'Roboto-Regular',
+  password: {
+    color: "#fff",
+    fontFamily: "Roboto-Regular",
   },
-  zathit17Wrapper: {
-    width: percentWidth(69.5),
-    marginTop: percentHeight(2),
+  contraseaParent: {
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  metodoDePago: {
-    opacity: 0,
-    fontSize: percentWidth(3.5),
-    fontFamily: 'Roboto-Regular',
+  frameParent: {
+    marginTop: 32,
   },
-  metodoDePagoParent: {
-    justifyContent: 'space-between',
-    alignSelf: 'stretch',
-    marginTop: percentHeight(2),
+  iniciarSesin: {
+    fontFamily: "Inter-SemiBold",
+    color: "#fafafa",
+    fontWeight: "600",
   },
-  formSeleccinMetodosDePag: {
-    marginTop: percentHeight(4),
-    width: percentWidth(69.5),
+  iniciarSesinWrapper: {
+    backgroundColor: "#e20a17",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+    marginTop: 32,
+    paddingVertical: 12,
+    flexDirection: "row",
+    width: percentWidth(88),
+    borderRadius: 8,
+    alignItems: "center",
   },
-  intentoHacerEl: {
-    fontSize: percentWidth(4),
-    fontFamily: 'Roboto-Regular',
+  bienvenidoParent: {
+    marginLeft: -160,
+    top: 300,
+    left: "50%",
+    alignItems: "center",
+    position: "absolute",
   },
-  hasta1000Caracteres: {
-    fontSize: percentWidth(3),
-    width: percentWidth(30.25),
-    height: percentHeight(1.75),
-    marginTop: percentHeight(2),
+  inputContainer: {
+    marginBottom: 16,
   },
-  formUsuarioParent: {
-    alignItems: 'flex-end',
-    marginTop: percentHeight(2),
+  errorText: {
+    color: "red",
+    fontSize: 12,
   },
-  detallaLaIncidenciaParent: {
-    borderRadius: percentWidth(4),
-    backgroundColor: 'rgba(171, 170, 170, 0.26)',
-    borderColor: '#fff',
-    borderWidth: 0.4,
-    width: '90%',
-    paddingVertical: percentHeight(8),
-    paddingHorizontal: percentWidth(4),
-    borderStyle: 'solid',
-    alignItems: 'center',
+  capa2Icon: {
+    height: "5.5%",
+    width: "51%",
+    top: "20.33%",
+    right: "24.44%",
+    bottom: "80%",
+    left: "25.56%",
+    maxWidth: "100%",
+    maxHeight: "100%",
+    position: "absolute",
+    overflow: "hidden",
+  },
+  botonesBotnSegundario: {
+    borderRadius: 8,
+    borderStyle: "solid",
+    borderColor: "#fafafa",
+    borderWidth: 2,
+    width: percentWidth(88),
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    marginTop: 20,
   },
 });
 
-export default RegistroTicketView;
+export default LoginComponent;
