@@ -18,12 +18,16 @@ import { getData } from '../../../../utils/asyncStorage/asyncStorage';
 import { saveTickets } from '../../../../services/tickets/tickets_service';
 import { resetForm } from '../../../../utils/redux/actions/ticketActions';
 import DialogNotificationComponent from '../../../../components/dialogs/dialogNotification';
+import {ImageLibraryOptions, launchCamera, launchImageLibrary} from 'react-native-image-picker';
+
 
 type ConfiguracionViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
 interface Props {
   navigation: ConfiguracionViewNavigationProp;
 }
+
+
 
 const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
   const [showDialog, setShowDialog] = useState(false);
@@ -32,9 +36,18 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
   const iss = useSelector((state: RootState) => state.ticketState.issue);
   const contract = useSelector((state:RootState) => state.contractState);
   const [showLoading, setShowLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const [showNotification, setShowNotification] = useState(false);
   const [notificationType, setNotificationType] = useState<null | 'success' | 'error'>(null);
   const dispatch = useDispatch();
+
+  const [selectImage, setSelectImage] = useState<any>([]);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | undefined>('');
+
+
+
+
 
   const { control, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: yupResolver(ticketsSchema),
@@ -57,10 +70,62 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
     toggleDialog();
   };
 
+
+  const pickImage = async () => {
+    const options:ImageLibraryOptions  = {
+      selectionLimit: 1,
+      mediaType: 'photo',
+      includeBase64:true,
+    };
+
+    try {
+      const result = await launchImageLibrary(options);
+
+      if (!result.didCancel && result.assets) {
+ // Check if assets exist
+        const { uri } = result.assets[0];
+        setSelectedImageUri(uri);
+        setShowImagePreview(true);
+        setSelectImage(result.assets[0]);
+      
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+    }
+  };
+
+  interface SelectImage {
+    type: string;
+    base64: string;
+  }
+  
+  interface MyTypeElement {
+    [key: string]: string[];
+  }
+  
+  type MyType = MyTypeElement[];
+
+  const convertToMyType = (selectImage: SelectImage, type: string): MyType => {
+    return [
+      {
+        [type]: [`data:${selectImage.type};base64,${selectImage.base64}`]
+      }
+    ];
+  };
+  
+  
+
   const onSubmit = async (data: any) => {
 
     setShowLoading(true);
+    const type = selectImage.fileName?.split('.').pop();
+    let fl={
+      type:selectImage.type ? selectImage.type : '',
 
+      base64:selectImage.base64 ? selectImage.base64 : '',
+
+    }
+    let filedef = convertToMyType(fl,type);
    const dataUser = await getData('user');
    const form = {
       "client": dataUser.client.id,
@@ -68,23 +133,28 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
       "issue": iss.id,
       "description":data.description,
       "office": depto.id,
-      "files": []
+      "files": filedef[0]?.undefined ? [] : filedef 
   }
-
-  console.log('====================================');
-  console.log(form);
-  console.log('====================================');
-
-
+ 
+// console.log('====================================');
+// console.log(form);
+// console.log('====================================');
+ 
     try {
       const response = await saveTickets(form);
+
       setShowLoading(false);
       setShowNotification(true);
       dispatch(resetForm());
       setNotificationType('success');
   
-    } catch (error) {
+    } catch (error:any) {
+    
+      setMessage(error.data[0]);
       setShowLoading(false);
+      setShowNotification(true);
+      setNotificationType('error');
+
     }
   };
 
@@ -105,34 +175,37 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
             </Text>
             <Text style={[styles.text, styles.textTypo]}>12345</Text>
           </View>
-          <TouchableOpacity>
-          <LinearGradient
-            style={[styles.vectorParent, styles.parentFlexBox]}
-            locations={[0.04, 1]}
-            colors={['#e20a17', '#1e1e1e']}
-            useAngle={true}
-            angle={180}
-          >
-            <Image
-              style={styles.vectorIcon}
-              resizeMode="cover"
-              source={require('../../../../assets/icons/home/multimedia.png')}
-            />
-            <View style={styles.subeUnaImagenParent}>
-              <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>
-                Sube una imagen
-              </Text>
-              <Text
-                style={[
-                  styles.formatosAdmitidosJpg,
-                  styles.subeUnaImagenFlexBox,
-                ]}
-              >
-                Formatos admitidos: JPG y PNG
-              </Text>
-            </View>
-          </LinearGradient>
-          </TouchableOpacity>
+          <View style={styles.parentFlexBox}>
+  {/* Resto del código */}
+  <TouchableOpacity onPress={pickImage}>
+    <LinearGradient
+      style={[styles.vectorParent, styles.parentFlexBox]}
+      locations={[0.04, 1]}
+      colors={['#e20a17', '#e20a17']}
+      useAngle={true}
+      angle={180}>
+      {selectedImageUri  ? (
+        <Image source={{ uri: selectedImageUri  }} style={styles.vectorIcon} resizeMode="cover" />
+      ) : (
+        <Image source={require('../../../../assets/icons/home/multimedia.png')} style={styles.vectorIcon} resizeMode="cover" />
+      )}
+      <View style={styles.subeUnaImagenParent}>
+        <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>Sube una imagen</Text>
+        <Text style={[styles.formatosAdmitidosJpg, styles.subeUnaImagenFlexBox]}>
+          Formatos admitidos: JPG y PNG
+        </Text>
+        {/* {imageName ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: 'white', marginRight: 5 }}>{imageName}</Text>
+            <TouchableOpacity onPress={() => setImage(null)}>
+              <Icon name="delete" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        ) : null} */}
+      </View>
+    </LinearGradient>
+  </TouchableOpacity>
+</View>
          
           <View style={styles.parentFlexBox}>
             <Controller
@@ -212,7 +285,7 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
 
         <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
                 {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Se ha generado un ticket para que puedas ver el avance de la solicitud"} route={"Tickets"} />}
-                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"Se ha producido un error"} />}
+                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={message} />}
             </DialogNotificationComponent>
       </View>
     );

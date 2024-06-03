@@ -15,6 +15,7 @@ import AfiliacionView from './cliente/afiliacion-cuentas/afiliacion_view';
 import RegistrarCuentaView from './cliente/afiliacion-cuentas/registrar_cuenta';
 import EditarCuentaView from './cliente/afiliacion-cuentas/components/edicion/editar_cuenta_view';
 import RegistroTicketView from './tickets/components/registro/registro_ticket';
+import TicketDetailView from './tickets/components/detalles/ticket_details_view';
 export {
     HomeView,
     ClientView,
@@ -33,4 +34,5 @@ export {
     RegistrarCuentaView,
     EditarCuentaView,
     RegistroTicketView,
+    TicketDetailView,
 }

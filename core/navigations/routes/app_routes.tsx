@@ -16,5 +16,6 @@ export type RootStackParamListRoute = {
     RegistrarCuenta:any;
     RegistrarTicket:any;
     EditarCuenta:{method:any};
+    DetalleTicket:{ticket:any}
   };
   

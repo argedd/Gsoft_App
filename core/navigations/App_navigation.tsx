@@ -18,6 +18,7 @@ import {
    RegistroTicketView, 
    ReportePagoView, 
    TestView, 
+   TicketDetailView, 
    TicketsView 
 } from '../views/views';
 
@@ -52,6 +53,7 @@ const AppNavigation = () => {
               <Stack.Screen name="RegistrarCuenta" component={RegistrarCuentaView} />
               <Stack.Screen name="EditarCuenta" component={EditarCuentaView} />
               <Stack.Screen name="RegistrarTicket" component={RegistroTicketView} />
+              <Stack.Screen name="DetalleTicket" component={TicketDetailView} />
            </Stack.Navigator> 
           </NavigationContainer>
         ) 

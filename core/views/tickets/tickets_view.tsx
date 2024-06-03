@@ -40,38 +40,49 @@ const TicketsView: React.FC<Props> = ({ navigation }) => {
     <Text style={styles.aunNoTienes}>Aun no tienes tickets creados</Text>
   );
 
+  const handleTicket = (ticket:any) => {
+    console.log('====================================');
+    console.log(ticket);
+    console.log('====================================');
+    navigation.navigate('DetalleTicket', { ticket: ticket });
+  }
+
   const ComponentTickets = () => (
     <View style={styles.frameParent}>
       <View style={styles.frameGroup}>
         {tickets.map((ticket, index) => (
-          <TouchableOpacity key={index}>
+          <TouchableOpacity key={index} onPress={()=>handleTicket(ticket)} >
             <LinearGradient
-              key={index}
-              style={styles.iconosAfiliacionDeCuentasParent}
-              locations={[0.04, 1]}
-              colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']}
-              useAngle={true}
-              angle={180}
-            >
-              <View style={styles.iconosAfiliacionDeCuentas}>
-                <Image style={styles.vectorIcon} resizeMode="cover" source={require("../../assets/icons/home/ticket.png")} />
+            key={index}
+          style={styles.iconosAfiliacionDeCuentasParent}
+          locations={[0.04, 1]}
+          colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']}
+          useAngle={true}
+          angle={180}
+        >
+          <View style={styles.iconosAfiliacionDeCuentas}>
+            <Image style={styles.vectorIcon} resizeMode="cover" source={require("../../assets/icons/home/ticket.png")} />
+          </View>
+          <View style={styles.frameContainer}>
+            <View style={styles.header}>
+              <Text style={[styles.gabrielaRamos, styles.iniciarSesinFlexBox]}>Nº{ticket.id} </Text>
+              <View style={[styles.badge, { backgroundColor: ticket.office_color }]}>
+                <Text style={styles.badgeText}>{ticket.office_name}</Text>
               </View>
-              <View style={styles.frameContainer}>
-                <Text style={[styles.gabrielaRamos, styles.iniciarSesinFlexBox]}>Nº{ticket.id} </Text>
-                <View style={[styles.badge, { backgroundColor: ticket.office_color }]}>
-                  <Text style={styles.badgeText}>{ticket.office_name}</Text>
-                </View>
-                <Text style={[styles.metodoPagoMvil, styles.iniciarSesinFlexBox]} numberOfLines={2} ellipsizeMode="tail">
-                  {ticket.description}
-                </Text>
-                <Text style={[styles.metodoPagoMvil, styles.iniciarSesinFlexBox]}>{moment(ticket.created_at).format('YYYY-MM-DD')}  Status: {ticket.status_name}</Text>
-              </View>
-            </LinearGradient>
+            </View>
+            <Text style={[styles.metodoPagoMvil, styles.iniciarSesinFlexBox]} numberOfLines={2} ellipsizeMode="tail">
+              {ticket.description}
+            </Text>
+            <Text style={[styles.metodoPagoMvil, styles.iniciarSesinFlexBox]}>{moment(ticket.created_at).format('YYYY-MM-DD')}  Status: {ticket.status_name}</Text>
+          </View>
+        </LinearGradient>
           </TouchableOpacity>
         ))}
       </View>
     </View>
   );
+  
+  
 
   const TicketsComponent = () => (
     <ScrollView style={styles.container}>
@@ -101,6 +112,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   aunNoTienes: {
     fontSize: percentWidth(6),
