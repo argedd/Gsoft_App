@@ -2,8 +2,6 @@ import * as React from "react";
 import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useDispatch } from "react-redux";
-import { setDataContract } from "../../../utils/redux/actions/contractActions";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamListRoute } from "../../../navigations/routes/app_routes";
 import { useNavigation } from "@react-navigation/native";

@@ -120,9 +120,6 @@ const ContractDetail = () => {
     const fetchInvoices = async () => {
       try {
         const response = await getContractDetail(contract.contract);
-        console.log('====================================');
-        console.log(response.contract_detail);
-        console.log('====================================');
         setContractDetail(response);
       } catch (error) {
         console.error('Error al obtener las facturas:', error);
