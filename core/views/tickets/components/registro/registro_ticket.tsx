@@ -112,6 +112,12 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
       }
     ];
   };
+
+  const removeImage = () => {
+    setSelectedImageUri(undefined);
+    setShowImagePreview(false);
+    setSelectImage([]);
+  };
   
   
 
@@ -163,7 +169,7 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
 
     return (
       <View style={styles.containerItem}>
-         {showLoading && <LoadingComponent isLoading={showLoading} />}
+        {showLoading && <LoadingComponent isLoading={showLoading} />}
 
         <View style={styles.detallaLaIncidenciaParent}>
           <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
@@ -173,47 +179,47 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
             <Text style={[styles.detallaLaIncidencia, styles.textTypo]}>
               Nº Contrato
             </Text>
-            <Text style={[styles.text, styles.textTypo]}>12345</Text>
+            <Text style={[styles.text, styles.textTypo]}>{contract.contract}</Text>
           </View>
           <View style={styles.parentFlexBox}>
-  {/* Resto del código */}
-  <TouchableOpacity onPress={pickImage}>
-    <LinearGradient
-      style={[styles.vectorParent, styles.parentFlexBox]}
-      locations={[0.04, 1]}
-      colors={['#e20a17', '#e20a17']}
-      useAngle={true}
-      angle={180}>
-      {selectedImageUri  ? (
-        <Image source={{ uri: selectedImageUri  }} style={styles.vectorIcon} resizeMode="cover" />
-      ) : (
-        <Image source={require('../../../../assets/icons/home/multimedia.png')} style={styles.vectorIcon} resizeMode="cover" />
-      )}
-      <View style={styles.subeUnaImagenParent}>
-        <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>Sube una imagen</Text>
-        <Text style={[styles.formatosAdmitidosJpg, styles.subeUnaImagenFlexBox]}>
-          Formatos admitidos: JPG y PNG
-        </Text>
-        {/* {imageName ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: 'white', marginRight: 5 }}>{imageName}</Text>
-            <TouchableOpacity onPress={() => setImage(null)}>
-              <Icon name="delete" size={24} color="white" />
-            </TouchableOpacity>
+          {selectedImageUri ? (
+          
+               <View  style={[styles.vectorParent, styles.parentFlexBox]}>
+                  <View style={styles.avatarContainer}>
+                    <Image source={{ uri: selectedImageUri }} style={styles.avatar} resizeMode="cover" />
+                    <TouchableOpacity style={styles.deleteIcon} onPress={removeImage}>
+                      <Icon name="delete" size={24} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                   </View>
+                ) : (
+                  <TouchableOpacity onPress={pickImage}>
+              <LinearGradient
+                style={[styles.vectorParent, styles.parentFlexBox]}
+                locations={[0.04, 1]}
+                colors={['#e20a17', '#e20a17']}
+                useAngle={true}
+                angle={180}>
+                    <Image source={require('../../../../assets/icons/home/multimedia.png')} style={styles.vectorIcon} resizeMode="cover" />
+                    <View style={styles.subeUnaImagenParent}>
+                      <Text style={[styles.subeUnaImagen, styles.subeUnaImagenFlexBox]}>Sube una imagen</Text>
+                      <Text style={[styles.formatosAdmitidosJpg, styles.subeUnaImagenFlexBox]}>
+                        Formatos admitidos: JPG y PNG
+                      </Text>
+                    </View>
+                    </LinearGradient>
+                    </TouchableOpacity>
+                )}
+            
           </View>
-        ) : null} */}
-      </View>
-    </LinearGradient>
-  </TouchableOpacity>
-</View>
-         
+
           <View style={styles.parentFlexBox}>
             <Controller
               name="department"
               control={control}
               defaultValue={depto.name}
               render={({ field: { onChange, value } }) => (
-                <TouchableOpacity style={styles.formSeleccinMetodosDePag} onPress={() => openDialog(<CardDepartments onClose={() => setShowDialog(false)}/>)}>
+                <TouchableOpacity style={styles.formSeleccinMetodosDePag} onPress={() => openDialog(<CardDepartments onClose={() => setShowDialog(false)} />)}>
                   <Text style={[styles.metodoDePago, styles.text1Typo]}>
                     Departamento
                   </Text>
@@ -224,15 +230,15 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               )}
             />
-             {errors.department && (
-            <Text style={styles.errorText}>{(errors.department as any).message}</Text>
-          )}
+            {errors.department && (
+              <Text style={styles.errorText}>{(errors.department as any).message}</Text>
+            )}
             <Controller
               name="issue"
               control={control}
               defaultValue={iss.name}
               render={({ field: { onChange, value } }) => (
-                <TouchableOpacity style={styles.formSeleccinMetodosDePag} onPress={() => openDialog(<CardIssues onClose={() => setShowDialog(false)}/>)}>
+                <TouchableOpacity style={styles.formSeleccinMetodosDePag} onPress={() => openDialog(<CardIssues onClose={() => setShowDialog(false)} />)}>
                   <Text style={[styles.metodoDePago, styles.text1Typo]}>Asunto</Text>
                   <View style={[styles.metodoDePagoParent, styles.parentWrapperBorder]}>
                     <Text style={[styles.text1, styles.text1Typo]}>{value}</Text>
@@ -241,45 +247,43 @@ const RegistroTicketView: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               )}
             />
-              {errors.issue && (
-            <Text style={styles.errorText}>{(errors.issue as any).message}</Text>
-          )}
+            {errors.issue && (
+              <Text style={styles.errorText}>{(errors.issue as any).message}</Text>
+            )}
           </View>
-          <View style={[styles.formUsuarioParent, styles.parentFlexBox1]}>
-            <View>
-              <Text style={[styles.nDeTelfono, styles.text1Typo]}>
-                Comentario
-              </Text>
-              <Controller
-                name="description"
-                control={control}
-                defaultValue=""
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    style={[styles.zathit17Wrapper, styles.parentWrapperBorder, { height: Math.max(80, value.split('\n').length * 20) }]}
-                    multiline
-                    maxLength={1000}
-                    value={value}
-                    onChangeText={text => {
-                      onChange(text);
-                      setComment(text);
-                    }}
-                  />
-                )}
-              />
-            </View>
+
+          <View style={styles.parentFlexBox}>
+            <Controller
+              name="description"
+              control={control}
+              defaultValue=""
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onBlur={onBlur}
+                  onChangeText={(value) => {
+                    onChange(value);
+                    setComment(value);
+                  }}
+                  value={value}
+                  placeholder="Comentario"
+                  placeholderTextColor="#9C9C9C"
+                  multiline
+                />
+              )}
+            />
             {errors.description && (
-            <Text style={styles.errorText}>{(errors.description as any).message}</Text>
-          )}
-            <Text style={[styles.hasta1000Caracteres, styles.text1Typo]}>
-              {`${comment.length}/1000 caracteres`}
-            </Text>
+              <Text style={styles.errorText}>{(errors.description as any).message}</Text>
+            )}
           </View>
+          <TouchableOpacity
+            style={styles.botonesBotnPrincipal}
+            onPress={handleSubmit(onSubmit)}>
+            <Text style={styles.iniciarSesin}>Crear nuevo ticket</Text>
+
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.iniciarSesin}>Crear nuevo ticket</Text>
-        </TouchableOpacity>
-        <DialogComponent visible={showDialog} onClose={toggleDialog}>
+            <DialogComponent visible={showDialog} onClose={toggleDialog}>
           {dialogContent}
         </DialogComponent>
 
@@ -454,6 +458,47 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginTop: 8,
+  },
+  boton: {
+    marginTop: percentHeight(3),
+    alignItems: 'center',
+  },
+  botonGradiente: {
+    width: percentWidth(60),
+    paddingVertical: percentHeight(1.5),
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  botonTexto: {
+    fontSize: 16,
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  avatarContainer: {
+    position: 'relative',
+  },
+  avatar: {
+    width: percentWidth(45),
+    height: percentHeight(18),
+    borderRadius: 8,
+  },
+  deleteIcon: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 50,
+    padding: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#9C9C9C',
+    borderRadius: 8,
+    padding: percentHeight(1),
+    width: percentWidth(80),
+    height: percentHeight(10),
+    textAlignVertical: 'top',
+    color: '#000',
   },
 });
 
