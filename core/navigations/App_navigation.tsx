@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { NavigationContainer } from '@react-navigation/native';
 import { 
    AfiliacionView,
+   ChangePasswordView,
    ClientView, 
    ConfiguracionView, 
    ContractDetail, 
@@ -56,6 +57,7 @@ const AppNavigation = () => {
               <Stack.Screen name="RegistrarTicket" component={RegistroTicketView} />
               <Stack.Screen name="DetalleTicket" component={TicketDetailView} />
               <Stack.Screen name="DetalleGtv" component={GtvView} />
+              <Stack.Screen name="ChangePassword" component={ChangePasswordView} />
            </Stack.Navigator> 
           </NavigationContainer>
         ) 

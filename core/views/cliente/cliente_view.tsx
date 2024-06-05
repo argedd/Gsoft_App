@@ -9,6 +9,7 @@ import LinearGradient from "react-native-linear-gradient";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { logout } from '../../services/auth/auth_service';
 import { getData } from '../../utils/asyncStorage/asyncStorage';
+import { percentWidth, percentHeight } from '../../utils/dimensions/dimensions';
 
 type ClientViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -16,7 +17,7 @@ interface Props {
   navigation: ClientViewNavigationProp;
 }
 
-const ClientView:  React.FC<Props> =  ({ navigation }) => {
+const ClientView: React.FC<Props> = ({ navigation }) => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const ClientView:  React.FC<Props> =  ({ navigation }) => {
   }, []);
 
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     await logout();
     navigation.navigate("Login");
   };
@@ -42,7 +43,7 @@ const ClientView:  React.FC<Props> =  ({ navigation }) => {
       onPress={() => navigation.navigate(item.route as any)}
     />
   );
-  
+
   const ClientComponent = () => (
     <View style={styles.container}>
       <BackButton title={'Mi Cuenta'} />
@@ -53,9 +54,9 @@ const ClientView:  React.FC<Props> =  ({ navigation }) => {
         useAngle={true}
         angle={180}
       >
-       
-        <MaterialCommunityIcons name="account-circle-outline" size={60} color="#fff" />
-  
+
+        <MaterialCommunityIcons name="account-circle-outline" size={percentWidth(15)} color="#fff" />
+
         <View style={styles.frameParent}>
           <View style={styles.gabrielaRamosWrapper}>
             <Text style={[styles.gabrielaRamos, styles.j258722635FlexBox]}>{user ? `${user.name} ${user.last_name}` : 'Cargando...'}</Text>
@@ -88,23 +89,23 @@ const styles = StyleSheet.create({
   },
   logoutContainer: {
     alignItems: 'center',  // Centra el contenido horizontalmente
-    marginVertical: 30,
+    marginVertical: percentHeight(3), // Aproximadamente 12
   },
   logoutButton: {
-    borderRadius: 8,
-    paddingHorizontal: 32,
-    paddingVertical: 12,
+    borderRadius: percentWidth(4), // Aproximadamente 16
+    paddingHorizontal: percentWidth(10), // Aproximadamente 40
+    paddingVertical: percentHeight(2), // Aproximadamente 8
     borderStyle: "solid",
     borderColor: "#fafafa",
     borderWidth: 2,
-    width: "80%",
+    width: percentWidth(80), // Aproximadamente 320
     alignItems: "center",
     justifyContent: "center",
 
   },
   logoutButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: percentWidth(4), // Aproximadamente 16
     fontWeight: 'bold',
   },
   iconosFlexBox: {
@@ -117,16 +118,16 @@ const styles = StyleSheet.create({
     color: "#fafafa"
   },
   vectorIcon: {
-    width: 44,
-    height: 44
+    width: percentWidth(10), // Aproximadamente 44
+    height: percentHeight(10), // Aproximadamente 44
   },
   iconosUsuario: {
-    width: 66,
-    height: 66,
-    padding: 11
+    width: percentWidth(15), // Aproximadamente 66
+    height: percentWidth(15), // Aproximadamente 66
+    padding: percentWidth(2), // Aproximadamente 11
   },
   gabrielaRamos: {
-    fontSize: 16,
+    fontSize: percentWidth(4), // Aproximadamente 16
     fontWeight: "600",
     fontFamily: "Roboto-Bold"
   },
@@ -134,26 +135,25 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   j258722635: {
-    fontSize: 12,
+    fontSize: percentWidth(4), // Aproximadamente 12
     fontFamily: "Roboto-Regular",
-    marginTop: 6
+    marginTop: percentHeight(1), // Aproximadamente 6
   },
   frameParent: {
-    marginLeft: 9,
-    paddingTop:30,
-    paddingBottom:30,
+    marginLeft: percentWidth(2), // Aproximadamente 9
+    paddingTop: percentHeight(5), // Aproximadamente 30
+    paddingBottom: percentHeight(5), // Aproximadamente 30
   },
   iconosUsuarioParent: {
-    borderRadius: 16,
+    borderRadius: percentWidth(8), // Aproximadamente 16
     borderStyle: "solid",
     borderColor: "#fafafa",
     borderWidth: 0.5,
-    width: '90%',  // Ajusta el ancho al 90% del contenedor padre
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    width: percentWidth(90),  // Ajusta el ancho al 90% del contenedor padre
+    paddingHorizontal: percentWidth(2), // Aproximadamente 16
     backgroundColor: "transparent",
-    marginTop: 60,
-    marginBottom: 80,
+    marginTop: percentHeight(15), // Aproximadamente 60
+    marginBottom: percentHeight(6), // Aproximadamente 80
     alignSelf: 'center'  // Centra el componente horizontalmente
   }
 });
