@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 
 import { StackNavigationProp } from '@react-navigation/stack';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BackButton } from '../../../components/components';
 import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
 import LayoutPrimary from '../../../components/layouts/layout_primary';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { percentHeight, percentWidth } from '../../../utils/dimensions/dimensions';
 import GtvDatosComponent from './components/datosGtv';
+import GtvPantallasComponent from './components/pantallasGtv';
+import GtvPaquetesComponent from './components/paquetesGtv';
 
 
 
@@ -33,17 +35,16 @@ const GtvView: React.FC<Props> = ({ navigation }) => {
             return <GtvDatosComponent id={service.id} contract={service.contract_detail_account.id} />;
           case 'pantallas':
         
-            return <Text>Pantallas</Text>;
+          return <GtvPantallasComponent id={service.id} contract={service.contract_detail_account.id} />;
           case 'planes':
          
-            return <Text>Planes</Text>;
+            return <GtvPaquetesComponent />;
           default:
             return null;
         }
       };
     const GtvComponent = () => (
         <View style={styles.container}>
-          <BackButton title={'Gestion de Planes'} />
           <View style={styles.itemContainer}>
             <Image style={styles.component1Icon} resizeMode="contain" source={require("../../../assets/icons/gtv/gtv.png")} />
 
@@ -92,7 +93,7 @@ const GtvView: React.FC<Props> = ({ navigation }) => {
                 <Image style={styles.vectorIcon} resizeMode="cover" source={require('../../../assets/icons/home/gestion-planes.png')} />
               </View>
             </TouchableOpacity>
-            <Text style={[styles.pagoMvil, styles.pagoMvilTypo]}>Planes</Text>
+            <Text style={[styles.pagoMvil, styles.pagoMvilTypo]}>Paquetes</Text>
           </View>
         </View>
         <View style={[ styles.parentFlexBox]}>
@@ -108,7 +109,11 @@ const GtvView: React.FC<Props> = ({ navigation }) => {
       );
   return (
     <LayoutPrimary>
-      <GtvComponent />
+    <BackButton title={'Gestion de Planes'} />
+<ScrollView stickyHeaderHiddenOnScroll={true}>
+<GtvComponent />
+
+</ScrollView>
     </LayoutPrimary>
 
   );
@@ -139,7 +144,7 @@ const styles = StyleSheet.create({
   },
   parentFlexBox: {
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   botonesSpaceBlock: {
     padding: percentWidth(2.5), // Aproximadamente 10

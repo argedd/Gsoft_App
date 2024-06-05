@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 interface Props {
   onClose: () => void;
   message: string;
-  route: keyof RootStackParamListRoute;
+  route?: keyof RootStackParamListRoute;
 }
 
 const SuccesComponent: React.FC<Props> = ({ onClose, message, route }) => {
@@ -16,7 +16,9 @@ const SuccesComponent: React.FC<Props> = ({ onClose, message, route }) => {
 
   const action = () => {
     onClose();
+    if(route){
     navigation.navigate(route as any); 
+    }
   };
 
   return (

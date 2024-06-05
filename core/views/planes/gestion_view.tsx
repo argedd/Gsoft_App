@@ -25,9 +25,6 @@ const GestionView: React.FC<Props> = ({ navigation }) => {
     const fetchContract = async () => {
       try {
         const response = await getContractDetail(contract.contract);
-        console.log('detail====================================');
-        console.log(response.contract_detail);
-        console.log('====================================');
         setContractDetail(response.contract_detail);
       } catch (error) {
         console.error('Error al obtener las facturas:', error);

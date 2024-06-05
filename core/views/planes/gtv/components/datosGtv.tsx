@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { LoadingComponent, SuccesComponent, ErrorComponent } from "../../../../components/components";
 import DialogNotificationComponent from "../../../../components/dialogs/dialogNotification";
 import { gtvSchema } from "../../../../utils/validators/gtv_validator";
-import { getInfo } from "../../../../services/gtv/gtv_service";
+import { getInfo, putAccountGtv } from "../../../../services/gtv/gtv_service";
 
 interface Props{
     id: string,
@@ -59,18 +59,19 @@ const GtvDatosComponent = ({id,contract}:Props) => {
             
         }
       
+        setShowLoading(false);
 
-        // const response = saveMethods(form);
+        const response = putAccountGtv(contract,form);
 
-        // response.then(resp => {
-        //     setShowLoading(false);
-        //     setShowNotification(true);
-        //     setNotificationType('success');
-        // }).catch(err => {
-        //     setShowLoading(false);
-        //     setShowNotification(true);
-        //     setNotificationType('error');
-        // });
+        response.then((resp: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('success');
+        }).catch((err: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('error');
+        });
     };
     return (
         <View style={styles.frameParent}>
@@ -166,7 +167,7 @@ const GtvDatosComponent = ({id,contract}:Props) => {
                 </TouchableOpacity>
             </View>
             <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
-                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Afiliación creada con exito"} route={"Afiliacion"} />}
+                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Datos Actualizados"}  />}
                 {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"Se ha producido un error"} />}
             </DialogNotificationComponent>
         </View>
@@ -266,7 +267,6 @@ const styles = StyleSheet.create({
     reportaTuPagoParent: {
         borderRadius: 16,
         backgroundColor: "rgba(171, 170, 170, 0.26)",
-        borderColor: "#fff",
         borderWidth: 0.5,
         paddingVertical: percentHeight(2),
         paddingHorizontal: percentWidth(4),
@@ -293,3 +293,5 @@ const styles = StyleSheet.create({
     }
 });
 export default GtvDatosComponent
+
+
