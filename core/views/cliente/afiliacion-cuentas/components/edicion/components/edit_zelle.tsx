@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, StyleSheet, View, TextInput, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, TextInput, TouchableOpacity, Switch } from "react-native";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import { useEffect, useState, useRef } from "react";
@@ -29,9 +29,11 @@ const EditZelleForm = (method: any) => {
     const zelleRef = useRef<TextInput>(null);
     const aliasRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
-
+    const [showStatusConfirm, setShowStatusConfirm] = useState(false);
+    const [isSwitchOn, setIsSwitchOn] = React.useState(false);
     useEffect(() => {
         if (method.method) {
+            setIsSwitchOn(method.method.status);
             setValue('alias', method.method.name);
             setValue('titular', method.method.sender);
             setValue('email', method.method.email);
@@ -84,6 +86,32 @@ const EditZelleForm = (method: any) => {
         }
     };
 
+    const onToggleSwitch = async () => {
+        setShowStatusConfirm(true);
+        // setIsSwitchOn(!isSwitchOn)
+
+    }
+
+    const handleStatusConfirm = async () => {
+        setShowLoading(true);
+
+        const form = {
+            "status": !isSwitchOn,
+        };
+
+        const response = editMethods(method.method.id, form);
+
+        response.then((resp: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('success');
+        }).catch((err: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('error');
+        });
+    };
+
     return (
         <View style={styles.frameParent}>
             {showLoading && <LoadingComponent isLoading={showLoading} />}
@@ -93,25 +121,25 @@ const EditZelleForm = (method: any) => {
                     <View>
                         <Text style={[styles.nDeTelfono, styles.textTypo]}>Titular</Text>
                         <View style={[styles.frameGroup, styles.frameGroupSpaceBlock]}>
-                        <TouchableOpacity style={[styles.zathit17Wrapper, styles.wrapperBorder]} onPress={() => zelleRef.current?.focus()}>
-                            <Controller
-                                control={control}
-                                name="titular"
-                                render={({ field: { onChange, onBlur, value } }) => (
-                                    <TextInput
-                                        ref={zelleRef}
-                                        style={styles.text}
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                        placeholder="Titular zelle"
-                                        placeholderTextColor="#fff"
-                                        maxLength={30}
-        
-                                    />
-                                )}
-                            />
-                        </TouchableOpacity>
+                            <TouchableOpacity style={[styles.zathit17Wrapper, styles.wrapperBorder]} onPress={() => zelleRef.current?.focus()}>
+                                <Controller
+                                    control={control}
+                                    name="titular"
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <TextInput
+                                            ref={zelleRef}
+                                            style={styles.text}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                            placeholder="Titular zelle"
+                                            placeholderTextColor="#fff"
+                                            maxLength={30}
+
+                                        />
+                                    )}
+                                />
+                            </TouchableOpacity>
                         </View>
                         {errors.titular && (
                             <Text style={styles.errorText}>{(errors.titular as any).message}</Text>
@@ -120,25 +148,25 @@ const EditZelleForm = (method: any) => {
                     <View style={styles.formUsuario}>
                         <Text style={[styles.nDeTelfono, styles.textTypo]}>Email</Text>
                         <View style={[styles.frameGroup, styles.frameGroupSpaceBlock]}>
-                        <TouchableOpacity style={[styles.zathit17Wrapper, styles.wrapperBorder]} onPress={() => emailRef.current?.focus()}>
-                            <Controller
-                                control={control}
-                                name="email"
-                                render={({ field: { onChange, onBlur, value } }) => (
-                                    <TextInput
-                                        ref={emailRef}
-                                        style={styles.text}
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                        placeholder="Email"
-                                        placeholderTextColor="#fff"
-                                        maxLength={30}
-        
-                                    />
-                                )}
-                            />
-                        </TouchableOpacity>
+                            <TouchableOpacity style={[styles.zathit17Wrapper, styles.wrapperBorder]} onPress={() => emailRef.current?.focus()}>
+                                <Controller
+                                    control={control}
+                                    name="email"
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <TextInput
+                                            ref={emailRef}
+                                            style={styles.text}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                            placeholder="Email"
+                                            placeholderTextColor="#fff"
+                                            maxLength={30}
+
+                                        />
+                                    )}
+                                />
+                            </TouchableOpacity>
                         </View>
                         {errors.email && (
                             <Text style={styles.errorText}>{(errors.email as any).message}</Text>
@@ -169,6 +197,14 @@ const EditZelleForm = (method: any) => {
                         )}
                     </View>
                 </View>
+                <View style={[styles.desactivarPantallaParent, styles.parentSpaceBlock]}>
+                    <Text style={styles.desactivarPantalla}>Pago Automatico</Text>
+                    <Switch value={isSwitchOn} onValueChange={() => onToggleSwitch()}
+                        trackColor={{ false: '#767577', true: '#767577' }}
+                        thumbColor={isSwitchOn ? '#ff0000' : '#f4f3f4'}
+                        ios_backgroundColor="#3e3e3e" />
+
+                </View>
             </View>
             <View style={styles.botonesBotnPrincipalParent}>
                 <TouchableOpacity style={[styles.botonesBotnPrincipal, styles.botonesFlexBox]} onPress={handleSubmit(onSubmit)}>
@@ -185,12 +221,18 @@ const EditZelleForm = (method: any) => {
             <DialogComponent visible={showDialog} onClose={toggleDialog}>
                 <CardPhones onClose={() => setShowDialog(false)} />
             </DialogComponent>
-            <DialogConfirm 
+            <DialogConfirm
                 visible={showDialogConfirm}
                 onClose={() => setShowDialogConfirm(false)}
                 onConfirm={handleDeleteConfirm} // Pasa la función que maneja la confirmación
                 message={"¿Estás seguro de eliminar éste método de pago?"} />
-                
+
+            <DialogConfirm
+                visible={showStatusConfirm}
+                onClose={() => setShowStatusConfirm(false)}
+                onConfirm={handleStatusConfirm} // Pasa la función que maneja la confirmación
+                message={"¿Estás seguro de cambiar el estado de Pago Automatico?"} />
+
         </View>
     );
 };
@@ -312,7 +354,7 @@ const styles = StyleSheet.create({
     frameParent: {
         width: "100%",
         alignItems: "center",
-        paddingTop: percentHeight(20)
+        paddingTop: percentHeight(12)
     },
     botonesBotnSegundario: {
         alignSelf: "stretch",
@@ -325,9 +367,25 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         paddingHorizontal: percentWidth(4),
-        paddingVertical:  percentHeight(1.5),
-        marginTop:  percentHeight(1.5)
-        }
+        paddingVertical: percentHeight(1.5),
+        marginTop: percentHeight(1.5)
+    },
+
+    desactivarPantalla: {
+        fontSize: percentWidth(3),
+        textAlign: "left",
+        color: "#fff",
+        fontFamily: "Roboto-Medium",
+        fontWeight: "500"
+    },
+    desactivarPantallaParent: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    parentSpaceBlock: {
+        marginTop: percentHeight(1),
+        flexDirection: "row"
+    },
 });
 
 export default EditZelleForm;

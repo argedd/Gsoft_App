@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, StyleSheet, View, TextInput, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, TextInput, TouchableOpacity, Switch } from "react-native";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -29,18 +29,21 @@ const EditPagoMovilForm = (method: any) => {
     const [notificationType, setNotificationType] = useState<null | 'success' | 'error'>(null);
     const [showDialog, setShowDialog] = useState(false);
     const [showDialogConfirm, setShowDialogConfirm] = useState(false);
+    const [showStatusConfirm, setShowStatusConfirm] = useState(false);
     const area = useSelector((state: RootState) => state.formState.areaCode);
     const phoneNumberRef = useRef<TextInput>(null);
     const aliasRef = useRef<TextInput>(null);
     const dispatch = useDispatch();
+    const [isSwitchOn, setIsSwitchOn] = React.useState(false);
 
     useEffect(() => {
         if (method.method) {
+
             setValue('alias', method.method.name);
             const senderDigits = method.method.sender;
             const firstFourDigits = senderDigits.slice(0, 4);
             const remainingDigits = senderDigits.slice(4);
-
+            setIsSwitchOn(method.method.status);
             dispatch(setAreaCode(firstFourDigits));
             setValue('phoneNumber', remainingDigits);
         }
@@ -90,6 +93,32 @@ const EditPagoMovilForm = (method: any) => {
             setShowNotification(true);
             setNotificationType('error');
         }
+    };
+
+    const onToggleSwitch = async () => {
+        setShowStatusConfirm(true);
+        // setIsSwitchOn(!isSwitchOn)
+
+    }
+
+    const handleStatusConfirm = async () => {
+        setShowLoading(true);
+
+        const form = {
+            "status": !isSwitchOn,
+        };
+
+        const response = editMethods(method.method.id, form);
+
+        response.then((resp: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('success');
+        }).catch((err: any) => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('error');
+        });
     };
 
     return (
@@ -174,6 +203,15 @@ const EditPagoMovilForm = (method: any) => {
                         )}
                     </View>
                 </View>
+                <View style={[styles.desactivarPantallaParent, styles.parentSpaceBlock]}>
+                    <Text style={styles.desactivarPantalla}>Pago Automatico</Text>
+                    <Switch value={isSwitchOn} onValueChange={() => onToggleSwitch()}
+                        trackColor={{ false: '#767577', true: '#767577' }}
+                        thumbColor={isSwitchOn ? '#ff0000' : '#f4f3f4'}
+                        ios_backgroundColor="#3e3e3e" />
+
+                </View>
+
             </View>
             <View style={styles.botonesBotnPrincipalParent}>
                 <TouchableOpacity style={[styles.botonesBotnPrincipal, styles.botonesFlexBox]} onPress={handleSubmit(onSubmit)}>
@@ -190,12 +228,18 @@ const EditPagoMovilForm = (method: any) => {
             <DialogComponent visible={showDialog} onClose={toggleDialog}>
                 <CardPhones onClose={() => setShowDialog(false)} />
             </DialogComponent>
-            <DialogConfirm 
+            <DialogConfirm
                 visible={showDialogConfirm}
                 onClose={() => setShowDialogConfirm(false)}
                 onConfirm={handleDeleteConfirm} // Pasa la función que maneja la confirmación
                 message={"¿Estás seguro de eliminar éste método de pago?"} />
-                
+
+            <DialogConfirm
+                visible={showStatusConfirm}
+                onClose={() => setShowStatusConfirm(false)}
+                onConfirm={handleStatusConfirm} // Pasa la función que maneja la confirmación
+                message={"¿Estás seguro de cambiar el estado de Pago Automatico?"} />
+
         </View>
     );
 };
@@ -330,9 +374,26 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         paddingHorizontal: percentWidth(4),
-        paddingVertical:  percentHeight(1.5),
-        marginTop:  percentHeight(1.5)
-        }
+        paddingVertical: percentHeight(1.5),
+        marginTop: percentHeight(1.5)
+    },
+
+
+    desactivarPantalla: {
+        fontSize: percentWidth(3),
+        textAlign: "left",
+        color: "#fff",
+        fontFamily: "Roboto-Medium",
+        fontWeight: "500"
+    },
+    desactivarPantallaParent: {
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    parentSpaceBlock: {
+        marginTop: percentHeight(1),
+        flexDirection: "row"
+    },
 });
 
 export default EditPagoMovilForm;
