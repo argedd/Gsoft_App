@@ -3,6 +3,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { RootStackParamListRoute } from "../../navigations/routes/app_routes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
+import { percentWidth, percentHeight } from "../../utils/dimensions/dimensions";
 
 interface Props {
   onClose: () => void;
@@ -16,15 +17,19 @@ const SuccesComponent: React.FC<Props> = ({ onClose, message, route }) => {
 
   const action = () => {
     onClose();
-    if(route){
-    navigation.navigate(route as any); 
+    if (route) {
+      navigation.navigate(route as any);
     }
   };
 
   return (
     <View style={styles.frameParent}>
       <View style={styles.capa1Parent}>
-        <Image style={styles.capa1Icon} resizeMode="cover" source={require('../../assets/icons/notificacion/succes.png')} />
+        <Image
+          style={styles.capa1Icon}
+          resizeMode="cover"
+          source={require('../../assets/icons/notificacion/succes.png')}
+        />
         <Text style={styles.tuOperacinHa}>{message}</Text>
       </View>
       <TouchableOpacity style={styles.botonesBotnPrincipal} onPress={action}>
@@ -36,44 +41,44 @@ const SuccesComponent: React.FC<Props> = ({ onClose, message, route }) => {
 
 const styles = StyleSheet.create({
   capa1Icon: {
-    width: 130,
-    height: 130
+    width: percentWidth(35), // Approx 130px on a 360px wide screen
+    height: percentWidth(35) // Ensure the height maintains aspect ratio if needed
   },
   tuOperacinHa: {
-    fontSize: 20,
+    fontSize: percentWidth(5.6), // Approx 20px on a 360px wide screen
     fontWeight: "500",
     fontFamily: "Inter-Medium",
     color: "#fff",
     textAlign: "center",
-    width: 246,
-    marginTop: 48
+    width: percentWidth(68), // Approx 246px on a 360px wide screen
+    marginTop: percentHeight(6.5) // Approx 48px on a 750px tall screen
   },
   capa1Parent: {
     alignItems: "center"
   },
   iniciarSesin: {
-    fontSize: 16,
+    fontSize: percentWidth(4.4), // Approx 16px on a 360px wide screen
     fontWeight: "600",
     fontFamily: "Inter-SemiBold",
     color: "#fafafa",
     textAlign: "left"
   },
   botonesBotnPrincipal: {
-    borderRadius: 8,
+    borderRadius: percentWidth(2.2), // Approx 8px on a 360px wide screen
     backgroundColor: "#e20a17",
-    width: 310,
+    width: percentWidth(86), // Approx 310px on a 360px wide screen
     flexDirection: "row",
     justifyContent: "center",
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    marginTop: 46,
+    paddingHorizontal: percentWidth(8.8), // Approx 32px on a 360px wide screen
+    paddingVertical: percentHeight(1.6), // Approx 12px on a 750px tall screen
+    marginTop: percentHeight(6.1), // Approx 46px on a 750px tall screen
     alignItems: "center"
   },
   frameParent: {
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 200
+    paddingTop: percentHeight(26.7) // Approx 200px on a 750px tall screen
   }
 });
 
