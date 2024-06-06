@@ -14,7 +14,7 @@ export interface IMenuItem {
     { id: '3', title: 'Facturación', icon:require('../assets/icons/home/facturas.png'),route:'Facturacion' },
     { id: '4', title: 'Mis Tickets', icon:require('../assets/icons/home/ticket.png'),route:'Tickets' },
     // { id: '5', title: 'Prueba de velocidad', icon:'speedometer',route:'Test' },
-    // { id: '6', title: 'Uso de datos', icon:require('../assets/icons/home/datos.png'),route:'Estadisticas' },
+    { id: '6', title: 'Uso de datos', icon:require('../assets/icons/home/datos.png'),route:'Estadisticas' },
   ];
   
   export default menuItems;
