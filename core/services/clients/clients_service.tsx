@@ -29,7 +29,23 @@ const api= gsoftAPI;
   }
 };
 
+const validatePassword = async (body:any): Promise<any> => {
+
+  const response = await api.post<any>(`/clients/validate_password/`,body);
+  return response.data; // Devuelve solo los datos de la respuesta
+
+};
+
+const setPassword = async (body:any): Promise<any> => {
+
+  const response = await api.post<any>(`/clients/set_password/`,body);
+  return response.data; // Devuelve solo los datos de la respuesta
+
+};
+
 export{
   getContracts,
   getContractDetail,
+  validatePassword,
+  setPassword
 }

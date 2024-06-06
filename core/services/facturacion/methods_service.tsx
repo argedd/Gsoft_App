@@ -13,6 +13,7 @@ const api = gsoftAPI;
 };
 
 const saveMethods = async (body:any): Promise<any> => {
+  
     const response = await api.post<any>(`/payments/methods/`,body);
     return response.data; // Devuelve solo los datos de la respuesta
 

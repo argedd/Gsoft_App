@@ -11,6 +11,7 @@ import { percentWidth, percentHeight } from '../../../utils/dimensions/dimension
 import { yupResolver } from '@hookform/resolvers/yup';
 import { passwordSchema } from '../../../utils/validators/user_validation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { setPassword, validatePassword } from '../../../services/clients/clients_service';
 
 
 
@@ -33,14 +34,56 @@ const ChangePasswordView: React.FC<Props> = ({ navigation }) => {
     const passwordRef = useRef<TextInput>(null);
     const newpasswordRef = useRef<TextInput>(null);
     const confirmRef = useRef<TextInput>(null);
+    const [message, setMessage] = useState('');
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
     };
-    const onSubmit = async (data: any) => {
 
+    const validatePass = async (passwordUser: string) => {
+        const form = {
+            "password":passwordUser
+        }
+        try {
+            const validate= await validatePassword(form);
+            setIsPasswordValid(true);
+    
+        } catch (error:any) {
+
+            setMessage(error.data[0]);
+            setShowNotification(true);
+            setNotificationType('error');
+            setIsPasswordValid(false);
+        }
+        
+        // Aquí puedes agregar más lógica de validación si es necesario
+      };
+    const onSubmit = async (data: any) => {
+        setShowLoading(true);
+        console.log('====================================');
+        console.log(data);
+        console.log('====================================');
+        const form = {
+         "password": data.newPassword,
+        "password2": data.confirmPassword,
+        
+        }
+
+        try {
+            const set= await setPassword(form);
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('success');
+        } catch (error:any) {
+            setMessage(error.data[0]);
+            setShowNotification(true);
+            setNotificationType('error');
+            setShowLoading(false);
+
+        }
     }
 
     const FormComponent = () => (
@@ -72,6 +115,7 @@ const ChangePasswordView: React.FC<Props> = ({ navigation }) => {
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
+                      onEndEditing={() => validatePass(value)}
                     />
                     <TouchableOpacity onPress={togglePasswordVisibility}>
                       <MaterialCommunityIcons
@@ -145,13 +189,17 @@ const ChangePasswordView: React.FC<Props> = ({ navigation }) => {
                 </View>
             </View>
             <View style={styles.botonesBotnPrincipalParent}>
-                <TouchableOpacity style={[styles.botonesBotnPrincipal, styles.botonesFlexBox]} onPress={handleSubmit(onSubmit)}>
-                    <Text style={[styles.iniciarSesin, styles.iniciarSesinTypo]}>Guardar Cambios</Text>
-                </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.botonesBotnPrincipal, styles.botonesFlexBox, { backgroundColor: isPasswordValid ? "#e20a17" : "grey" }]} // Change color based on validation status
+              onPress={handleSubmit(onSubmit)}
+              disabled={!isPasswordValid} // Disable button if password is not validated
+            >
+              <Text style={[styles.iniciarSesin, styles.iniciarSesinTypo]}>Guardar Cambios</Text>
+            </TouchableOpacity>
             </View>
             <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
-                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Afiliación creada con exito"} route={"Afiliacion"} />}
-                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"Se ha producido un error"} />}
+                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Contraseña actualizada con exito"} route={"Client"} />}
+                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={message} />}
             </DialogNotificationComponent>
         </View>
       
