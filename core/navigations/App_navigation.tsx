@@ -23,6 +23,7 @@ import {
    TicketDetailView, 
    TicketsView 
 } from '../views/views';
+import EditDatosView from '../views/cliente/cuenta/editar_datos';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +59,7 @@ const AppNavigation = () => {
               <Stack.Screen name="DetalleTicket" component={TicketDetailView} />
               <Stack.Screen name="DetalleGtv" component={GtvView} />
               <Stack.Screen name="ChangePassword" component={ChangePasswordView} />
+              <Stack.Screen name="EditDatos" component={EditDatosView} />
            </Stack.Navigator> 
           </NavigationContainer>
         ) 

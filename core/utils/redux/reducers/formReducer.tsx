@@ -1,5 +1,6 @@
 const initialState = {
     areaCode: '0412',
+    areaCode2: '0412',
     digit: 'V',
     sender: null,
   };
@@ -11,6 +12,12 @@ const initialState = {
           ...state,
           areaCode: action.payload,
         };
+
+        case 'SET_ACODE2':
+          return {
+            ...state,
+            areaCode2: action.payload,
+          };
 
         case 'SET_DCEDULA':
           return {
