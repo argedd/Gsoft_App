@@ -2,8 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const gsoftAuthAPI = axios.create({
-  // baseURL: "https://core.gsoft.app/portal",
-  baseURL: "http://192.168.196.251:9000/portal",
+  baseURL: "https://core.gsoft.app/portal",
+  // baseURL: "http://192.168.196.251:9000/portal",
 });
 
  const login = async (data: any) => {

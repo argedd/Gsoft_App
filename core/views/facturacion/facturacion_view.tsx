@@ -30,7 +30,7 @@ const FacturacionView = ({ navigation }:Props) => {
         const response = await getInvoices(contract.contract);
         setInvoices(response.results);
       } catch (error) {
-        console.error('Error al obtener las facturas:', error);
+        console.log('Error al obtener las facturas:', error);
       }
     };
   
