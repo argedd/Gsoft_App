@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   	androidLarge3: {
     		flex: 1,
     		width: "100%",
-    		height: 800,
+    		height: "100%",
     		overflow: "hidden"
   	}
 });

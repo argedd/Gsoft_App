@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { removeData } from '../../utils/asyncStorage/asyncStorage';
 
 const gsoftAuthAPI = axios.create({
   baseURL: "https://core.gsoft.app/portal",
@@ -25,15 +26,13 @@ const gsoftAuthAPI = axios.create({
         client: client
     }
     // Guardar el token en AsyncStorage para su persistencia
-    await AsyncStorage.clear();
     await AsyncStorage.setItem('user', JSON.stringify(user));
     return response.data;
  
   } catch (error) {
     // console.error('Error al iniciar sesión:', error);
     // Manejar errores de inicio de sesión
-    await AsyncStorage.clear();
-  }
+    await removeData('user');  }
 };
 
 const recoveryPassword = async (data: any) => {
@@ -51,8 +50,7 @@ const recoveryPassword = async (data: any) => {
 const logout = async () => {
   try {
     // Realizar la solicitud de inicio de sesión  
-    await AsyncStorage.clear();
-
+    await removeData('user');
 
     return 'Exit';
  

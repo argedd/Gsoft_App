@@ -1,8 +1,8 @@
 // components/LoginComponent.tsx
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { loginSchema } from '../../../utils/validators/validations_forms';
 import { login } from '../../../services/auth/auth_service';
@@ -15,9 +15,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/store';
 import DialogNotificationComponent from '../../../components/dialogs/dialogNotification';
 import CardCedula from './card_cedula';
-import { percentWidth } from '../../../utils/dimensions/dimensions';
+import { percentHeight, percentWidth } from '../../../utils/dimensions/dimensions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { resetForm } from '../../../utils/redux/actions/invoiceActions';
+import TouchID from 'react-native-touch-id'; // Import TouchID
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -35,11 +37,31 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
   const cedulaRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
   const dispatch = useDispatch();
+  const [credentials, setCredentials] = useState({ identification: '', password: '' });
+
+
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(loginSchema)
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    const getStoredCredentials = async () => {
+      try {
+        const storedCredentials = await AsyncStorage.getItem('credentials');
+        if (storedCredentials) {
+          setCredentials(JSON.parse(storedCredentials));
+        }
+      } catch (error) {
+        console.log('Error retrieving stored credentials:', error);
+      }
+    };
+
+    getStoredCredentials();
+  }, []);
+
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -51,6 +73,9 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
 
   const onSubmit = async (data: any) => {
     setShowLoading(true);
+    // Combina el dígito y la cédula para formar la identificación
+    const identification = `${digit}${data.cedula}`;
+    const password = data.password;
     const form = {
       identification: `${digit}${data.cedula}`,
       password: data.password
@@ -58,14 +83,21 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
 
     try {
       const response = await login(form);
+      // Guarda las credenciales en el estado local
+      setCredentials({ identification, password });
 
+      // Guarda las credenciales en el almacenamiento local
+      try {
+        await AsyncStorage.setItem('credentials', JSON.stringify({ identification, password }));
+      } catch (error) {
+        console.log('Error al guardar las credenciales:', error);
+      }
       if (response.token) {
         setShowLoading(false);
         dispatch(resetForm());
         navigation.navigate("Home");
       } else {
         setShowLoading(false);
-
         console.log('Token failed');
       }
     } catch (error) {
@@ -75,10 +107,66 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const handleBiometricAuth = () => {
+    const optionalConfigObject = {
+      title: 'Authentication Required', // Android
+      imageColor: '#e00606', // Android
+      imageErrorColor: '#ff0000', // Android
+      sensorDescription: 'Touch sensor', // Android
+      sensorErrorDescription: 'Failed', // Android
+      cancelText: 'Cancel', // Android
+      fallbackLabel: 'Show Passcode', // iOS (if empty, then label is hidden)
+      unifiedErrors: false, // use unified error messages (default false)
+      passcodeFallback: false, // iOS
+    };
+
+    TouchID.authenticate('To access your account', optionalConfigObject)
+      .then((success: any) => {
+        // Authenticate with the captured credentials
+        console.log('====================================');
+        console.log(credentials);
+        console.log('====================================');
+        setShowLoading(true);
+        login(credentials)
+          .then(response => {
+            if (response.token) {
+              setShowLoading(false);
+              dispatch(resetForm());
+              navigation.navigate("Home");
+            } else {
+              setShowLoading(false);
+              console.log('Token failed');
+            }
+          })
+          .catch(error => {
+            setShowLoading(false);
+            setShowNotification(true);
+            setNotificationType('error');
+          });
+      })
+      .catch((error: any) => {
+        setShowLoading(false);
+        setShowNotification(true);
+        setNotificationType('error');
+      });
+  };
+
+  useEffect(() => {
+    // Check if biometric authentication is supported
+    TouchID.isSupported()
+      .then(biometryType => {
+        // If supported, you could automatically prompt for biometrics here
+        // or enable a button for the user to trigger biometric authentication
+      })
+      .catch(error => {
+        console.log('Biometric authentication not supported', error);
+      });
+  }, []);
+
   return (
     <View style={styles.container}>
       {showLoading && <LoadingComponent isLoading={showLoading} />}
- 
+
       <Image style={styles.capa2Icon} resizeMode="cover" source={require("../../../assets/logo_gnetwork.png")} />
       <View style={styles.bienvenidoParent}>
         <Text style={[styles.bienvenido, styles.bienvenidoClr]}>Bienvenido</Text>
@@ -109,7 +197,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                   />
                 </View>
               </TouchableOpacity>
-              
+
               <TouchableOpacity style={[styles.wrapper, styles.wrapperBorder]} onPress={() => cedulaRef.current?.focus()}>
                 <Controller
                   control={control}
@@ -125,6 +213,8 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                       placeholderTextColor="#fff"
                       keyboardType="numeric"
                       maxLength={8}
+                      onChange={(text) => setCredentials((prevState) => ({ ...prevState, identification: `${digit}${text}` }))}
+
                     />
                   )}
                 />
@@ -134,7 +224,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.errorText}>{(errors.cedula as any).message}</Text>
             )}
           </View>
-          
+
           <TouchableOpacity onPress={() => passwordRef.current?.focus()}>
             <Controller
               control={control}
@@ -152,6 +242,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
+                      onChange={(text) => setCredentials((prevState) => ({ ...prevState, password: `${text}` }))}
                     />
                     <TouchableOpacity onPress={togglePasswordVisibility}>
                       <MaterialCommunityIcons
@@ -169,9 +260,15 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
             />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.iniciarSesinWrapper} onPress={handleSubmit(onSubmit)}>
-          <Text style={[styles.iniciarSesin, styles.buttonTypo]}>Iniciar sesión</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.iniciarSesionButton} onPress={handleSubmit(onSubmit)}>
+            <Text style={[styles.iniciarSesin, styles.buttonTypo]}>Iniciar sesión</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.biometricsButton} onPress={handleBiometricAuth}>
+            <MaterialCommunityIcons name="fingerprint" size={24} color="#fff" />
+            <Text style={[styles.iniciarSesin, styles.buttonTypo]}></Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity style={styles.botonesBotnSegundario} onPress={() => setShowModalRecuperar(true)}>
           <Text style={styles.iniciarSesin}>Nuevo usuario / olvide contraseña</Text>
         </TouchableOpacity>
@@ -265,21 +362,36 @@ const styles = StyleSheet.create({
     color: "#fafafa",
     fontWeight: "600",
   },
-  iniciarSesinWrapper: {
+  iniciarSesionButton: {
     backgroundColor: "#e20a17",
     justifyContent: "center",
     paddingHorizontal: 32,
-    marginTop: 32,
     paddingVertical: 12,
     flexDirection: "row",
-    width: percentWidth(88),
+    width: percentWidth(70),
     borderRadius: 8,
     alignItems: "center",
   },
+  biometricsButton: {
+    backgroundColor: "#e20a17",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: "row",
+    width: percentWidth(15),
+    borderRadius: 8,
+    alignItems: "center",
+    marginLeft: percentWidth(4),
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: percentWidth(88),
+    marginTop: 32,
+  },
   bienvenidoParent: {
-    marginLeft: -160,
-    top: 300,
-    left: "50%",
+    top: percentHeight(35),
+    left: percentWidth(6),
     alignItems: "center",
     position: "absolute",
   },

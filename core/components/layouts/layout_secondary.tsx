@@ -15,12 +15,24 @@ const styles = StyleSheet.create({
   	
 
 
-  	androidLarge3: {
-    		flex: 1,
-    		width: "100%",
-    		height: 800,
-    		overflow: "hidden"
-  	}
+	androidLarge3: {
+		flex: 1,
+		width: "100%",
+		height: "100%",
+		overflow: "hidden"
+  },
+  rectangleView: {
+	backgroundColor: "#90908f",
+	width: "100%",
+	height: 20,
+	alignItems:'center'
+	},
+	gNetworkAppVersin: {
+		fontSize: 10,
+		fontFamily: "Roboto-Regular",
+		color: "#fafafa",
+		textAlign: "left"
+		}
 });
 
 export default LayoutSecondary;
