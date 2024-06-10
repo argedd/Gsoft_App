@@ -33,7 +33,7 @@ const InfoTrfComponent = () => {
           </View>
           <View style={styles.frameGroup}>
             <Text style={[styles.datosDelPago, styles.textTypo]}>Monto a pagar</Text>
-            <Text style={[styles.bs, styles.bsTypo]}>{amountBs} Bs</Text>
+            <Text style={[styles.bs, styles.bsTypo]}>{amountBs.toFixed(2)} Bs</Text>
           </View>
         </View>
        

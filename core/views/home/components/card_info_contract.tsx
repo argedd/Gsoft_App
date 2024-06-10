@@ -5,6 +5,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamListRoute } from "../../../navigations/routes/app_routes";
 import { useNavigation } from "@react-navigation/native";
+import { percentWidth } from "../../../utils/dimensions/dimensions";
 
 interface CardInfoProps {
   data: any;
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderStyle: "solid",
     borderColor: "#abaaaa",
-    width: 300, // Ajuste del ancho de la tarjeta
+    width: percentWidth(90), // Ajuste del ancho de la tarjeta
     paddingHorizontal: 32,
     paddingVertical: 16,
     backgroundColor: "transparent",

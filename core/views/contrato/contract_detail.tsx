@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BackButton, LoadingComponent } from '../../components/components';
 import LayoutPrimary from '../../components/layouts/layout_primary';
 import { useSelector } from 'react-redux';
@@ -33,84 +33,85 @@ const getStatusImage = (status: number) => {
     }
   };
 
-const ContractComponent = ({ data }: ContractComponentProps) => (
-  <View style={styles.container}>
-    <BackButton title={'Contrato'} />
-    <View style={styles.contractContainer}>
-      <View style={styles.frameParent}>
-        <View style={styles.frameGroup}>
-          <View style={styles.frameContainer}>
-            <View style={styles.activoParent}>
-              <Text style={styles.activo}>{data.status_name}</Text>
-              <Image source={getStatusImage(data.status)} style={styles.indicatorImage} />
-              {/* <Image style={styles.frameChild} resizeMode="cover" source="Group 1.png" /> */}
-            </View>
-            <View style={[styles.frameView, styles.frameViewSpaceBlock]}>
-              <View style={styles.frameParent1}>
-                <View style={styles.frameGroup}>
-                  <Text style={styles.mbps30Typo}>Nº de contrato:</Text>
-                  <Text style={[styles.text, styles.textTypo]}>{data.id}</Text>
+  const ContractComponent = ({ data }: ContractComponentProps) => (
+    <View style={styles.container}>
+      <BackButton title={'Contrato'} />
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.contractContainer}>
+          <View style={styles.frameParent}>
+            <View style={styles.frameGroup}>
+              <View style={styles.frameContainer}>
+                <View style={styles.activoParent}>
+                  <Text style={styles.activo}>{data.status_name}</Text>
+                  <Image source={getStatusImage(data.status)} style={styles.indicatorImage} />
                 </View>
-                <View style={styles.nOrdenParent}>
-                  <Text style={styles.mbps30Typo}>Nº orden:</Text>
-                  <Text style={[styles.text, styles.textTypo]}>{data.order_id}</Text>
+                <View style={[styles.frameView, styles.frameViewSpaceBlock]}>
+                  <View style={styles.frameParent1}>
+                    <View style={styles.frameGroup}>
+                      <Text style={styles.mbps30Typo}>Nº de contrato:</Text>
+                      <Text style={[styles.text, styles.textTypo]}>{data.id}</Text>
+                    </View>
+                    <View style={styles.nOrdenParent}>
+                      <Text style={styles.mbps30Typo}>Nº orden:</Text>
+                      <Text style={[styles.text, styles.textTypo]}>{data.order_id}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.frameParent2}>
+                    <View style={styles.frameGroup}>
+                      <Text style={[styles.saldoAFavor, styles.bsTypo]}>Saldo a favor</Text>
+                      <Text style={[styles.bs, styles.bsTypo]}>{data.balance} USD</Text>
+                    </View>
+                    <View style={styles.frameItem} />
+                    <View style={styles.deudaActualParent}>
+                      <Text style={[styles.saldoAFavor, styles.bsTypo]}>Deuda actual</Text>
+                      <Text style={[styles.bs, styles.bsTypo]}>{data.debt} USD</Text>
+                    </View>
+                  </View>
+                  <View style={styles.fechaDeCobroParent}>
+                    <Text style={styles.mbps30Typo}>Fecha de cobro:</Text>
+                    <Text style={[styles.deMayo, styles.textTypo]}>Pagar antes del {data.date_cicle} para evitar cortes</Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.frameParent2}>
-                <View style={styles.frameGroup}>
-                  <Text style={[styles.saldoAFavor, styles.bsTypo]}>Saldo a favor</Text>
-                  <Text style={[styles.bs, styles.bsTypo]}>{data.balance} USD</Text>
-                </View>
-                <View style={styles.frameItem} />
-                <View style={styles.deudaActualParent}>
-                  <Text style={[styles.saldoAFavor, styles.bsTypo]}>Deuda actual</Text>
-                  <Text style={[styles.bs, styles.bsTypo]}>{data.debt} USD</Text>
+                <View style={styles.frameViewSpaceBlock}>
+                  <Text style={styles.mbps30Typo}>Firma cliente:</Text>
+                  <View style={styles.rectangleView}>
+                    <Image style={styles.firmas1Icon} resizeMode="cover" source={{ uri: data.signe }} />
+                  </View>
                 </View>
               </View>
               <View style={styles.fechaDeCobroParent}>
-                <Text style={styles.mbps30Typo}>Fecha de cobro:</Text>
-                <Text style={[styles.deMayo, styles.textTypo]}>Pagar antes del {data.date_cicle} para evitar cortes</Text>
+                <Text style={styles.mbps30Typo}>Dirección</Text>
+                <Text style={[styles.loremIpsumDolor, styles.internetTypo]}>{data.address}</Text>
               </View>
             </View>
-            <View style={styles.frameViewSpaceBlock}>
-              <Text style={styles.mbps30Typo}>Firma cliente:</Text>
-              <Image style={styles.firmas1Icon} resizeMode="cover" source={{ uri: data.signe }} />
-            </View>
-          </View>
-          <View style={styles.fechaDeCobroParent}>
-            <Text style={styles.mbps30Typo}>Dirección</Text>
-            <Text style={[styles.loremIpsumDolor, styles.internetTypo]}>{data.address}</Text>
-          </View>
-        </View>
-        <View style={styles.serviciosContratadosParent}>
-          <Text style={styles.mbps30Typo}>Servicios contratados</Text>
-          <View style={styles.frameParent3}>
-            {data.contract_detail.map((service, index)=>(
-               service.plan_type != null ? (
-                <View key={index} style={styles.frameGroup}>
-                  <Text style={styles.internetTypo}>{service.service_type.name}</Text>
-                  <View style={styles.planDiamanteParent}>
-                    <Text style={[styles.planDiamante, styles.planTypo]}>{service.plan_type.name}</Text>
-                    <Text style={[styles.mbps30, styles.mbps30Typo]}>{service.plan_type.profile}</Text>
+            <View style={styles.serviciosContratadosParent}>
+              <Text style={styles.mbps30Typo}>Servicios contratados</Text>
+              <View style={styles.frameParent3}>
+                {data.contract_detail.map((service, index) => (
+                  service.plan_type != null ? (
+                    <View key={index} style={styles.frameGroup}>
+                      <Text style={styles.internetTypo}>{service.service_type.name}</Text>
+                      <View style={styles.planDiamanteParent}>
+                        <Text style={[styles.planDiamante, styles.planTypo]}>{service.plan_type.name}</Text>
+                        <Text style={[styles.mbps30, styles.mbps30Typo]}>{service.plan_type.profile}</Text>
+                      </View>
+                    </View>
+                  ) : <View key={index} style={styles.frameGroup}>
+                    <Text style={styles.internetTypo}>{service.service_type.name}</Text>
+                    <View style={styles.planDiamanteParent}>
+                      <Text style={[styles.planDiamante, styles.planTypo]}>{service.plan_type_corpor.description}</Text>
+                      {/* <Text style={[styles.mbps30, styles.mbps30Typo]}>{service.plan_type_corpor.cost}</Text> */}
+                    </View>
                   </View>
-                </View>
-              ) :  <View key={index} style={styles.frameGroup}>
-              <Text style={styles.internetTypo}>{service.service_type.name}</Text>
-              <View style={styles.planDiamanteParent}>
-                <Text style={[styles.planDiamante, styles.planTypo]}>{service.plan_type_corpor.description}</Text>
-                {/* <Text style={[styles.mbps30, styles.mbps30Typo]}>{service.plan_type_corpor.cost}</Text> */}
+  
+                ))}
               </View>
             </View>
-                  
-            ))}
-        
-      
           </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
-  </View>
-);
+  );
 
 const ContractDetail = () => {
   const contract = useSelector((state: RootState) => state.contractState);
@@ -139,6 +140,19 @@ const ContractDetail = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+      },
+      scrollViewContent: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom:percentHeight(1)
+      },
+      rectangleView: {
+        borderRadius: 8,
+        backgroundColor: "#fafafa",
+        height: 48,
+        justifyContent: 'center',
+        alignItems: 'center',
       },
       contractContainer: {
         flex: 1,
