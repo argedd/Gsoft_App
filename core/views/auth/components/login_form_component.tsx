@@ -185,7 +185,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                           onBlur={onBlur}
                           onChangeText={onChange}
                           value={digit}
-                          placeholder="0412"
+                          placeholder="V"
                           placeholderTextColor="#fff"
                           maxLength={4}
                           selectionColor="red"
