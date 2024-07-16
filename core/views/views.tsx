@@ -18,6 +18,7 @@ import RegistroTicketView from './tickets/components/registro/registro_ticket';
 import TicketDetailView from './tickets/components/detalles/ticket_details_view';
 import GtvView from './planes/gtv/gtv_view';
 import ChangePasswordView from './cliente/cuenta/actualizar-clave';
+import PreguntasView from './preguntas/preguntas';
 export {
     HomeView,
     ClientView,
@@ -39,4 +40,5 @@ export {
     TicketDetailView,
     GtvView,
     ChangePasswordView,
+    PreguntasView
 }

@@ -39,7 +39,7 @@ const HomeView: React.FC<Props> = ({navigation}) => {
 
   const handleFabPress = () => {
     // Maneja la acción del botón aquí
-    Alert.alert('FAB Pressed!');
+    navigation.navigate("Preguntas");
   };
 
   const renderItem = ({ item }:{ item: IMenuItem }) => (

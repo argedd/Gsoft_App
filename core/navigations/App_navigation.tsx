@@ -16,6 +16,7 @@ import {
    InfoPagoView, 
    LoginView, 
    PagoFacturaView, 
+   PreguntasView, 
    RegistrarCuentaView, 
    RegistroTicketView, 
    ReportePagoView, 
@@ -83,6 +84,7 @@ const MainStackNavigator = () => {
             <Stack.Screen name="DetalleGtv" component={GtvView} />
             <Stack.Screen name="ChangePassword" component={ChangePasswordView} />
             <Stack.Screen name="EditDatos" component={EditDatosView} />
+            <Stack.Screen name="Preguntas" component={PreguntasView} />
         </Stack.Navigator>
     );
 }

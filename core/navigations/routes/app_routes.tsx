@@ -20,5 +20,6 @@ export type RootStackParamListRoute = {
     DetalleGtv:{service:any}
     ChangePassword:any,
     EditDatos:any
+    Preguntas:any
   };
   

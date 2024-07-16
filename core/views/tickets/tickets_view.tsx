@@ -41,9 +41,7 @@ const TicketsView: React.FC<Props> = ({ navigation }) => {
   );
 
   const handleTicket = (ticket:any) => {
-    console.log('====================================');
-    console.log(ticket);
-    console.log('====================================');
+
     navigation.navigate('DetalleTicket', { ticket: ticket });
   }
 
