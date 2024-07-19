@@ -3,6 +3,7 @@ import { ScrollView, View, StyleSheet, Dimensions } from "react-native";
 import CardInfo from "./card_info_contract";
 import { useDispatch } from 'react-redux';
 import { setContract, setDataContract } from "../../../utils/redux/actions/contractActions";
+import { LoadingComponent } from "../../../components/components";
 
 interface CarouselInfoProps {
     data: any;
@@ -12,6 +13,7 @@ const Carousel: React.FC<CarouselInfoProps> = ({ data }) =>{
   const [activeIndex, setActiveIndex] = useState(0);
   const screenWidth = Dimensions.get("window").width;
   const dispatch = useDispatch();
+  const [showLoading, setShowLoading] = useState(false);
 
 
   useEffect(() => {
@@ -24,20 +26,32 @@ const Carousel: React.FC<CarouselInfoProps> = ({ data }) =>{
 
 
   const onScroll = (event: { nativeEvent: { layoutMeasurement: { width: any; }; contentOffset: { x: any; }; }; }) => {
+
     const slideSize = event.nativeEvent.layoutMeasurement.width;
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.floor(contentOffsetX / slideSize);
     if (index !== activeIndex) {
+      setShowLoading(true);
+
       setActiveIndex(index);
       dispatch(setContract(data[index].id));
       dispatch(setDataContract(data[index])); // Set the first contract when data changes
 
       console.log(`Active Card ID: ${data[index].id}`);
+
     }
+    const loadingInterval = setInterval(() => {
+      setShowLoading(false);
+      clearInterval(loadingInterval);
+    }, 2000);
+
+
   };
 
   return (
     <View style={styles.carouselContainer}>
+      {showLoading && <LoadingComponent isLoading={showLoading} />}
+
       <ScrollView
         horizontal
         pagingEnabled

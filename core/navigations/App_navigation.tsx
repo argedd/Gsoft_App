@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { 
    AfiliacionView,
+   AsistenciaView,
    ChangePasswordView,
    ClientView, 
    ConfiguracionView, 
@@ -14,6 +15,7 @@ import {
    GtvView, 
    HomeView, 
    InfoPagoView, 
+   InternetView, 
    LoginView, 
    PagoFacturaView, 
    PreguntasView, 
@@ -85,6 +87,8 @@ const MainStackNavigator = () => {
             <Stack.Screen name="ChangePassword" component={ChangePasswordView} />
             <Stack.Screen name="EditDatos" component={EditDatosView} />
             <Stack.Screen name="Preguntas" component={PreguntasView} />
+            <Stack.Screen name="GestionInternet" component={InternetView} />
+            <Stack.Screen name="Asistencia" component={AsistenciaView} />
         </Stack.Navigator>
     );
 }

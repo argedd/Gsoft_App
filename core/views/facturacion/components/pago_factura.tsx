@@ -12,6 +12,7 @@ import { getTasaBcv } from '../../../services/bcv/bcv';
 import { ResultBcv } from '../../../data/interfaces/bcv_interface';
 import { setAmount, setAmountBs, getMethodsClient } from '../../../utils/redux/actions/invoiceActions';
 import { getMethods } from '../../../services/facturacion/methods_service';
+import { setTasa } from '../../../utils/redux/actions/bcvActions';
 
 type NavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -35,6 +36,7 @@ const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
                 if (Array.isArray(tasa)) {
                     const firstTasa = tasa[0] as ResultBcv;
                     setTasaBcv(Number(firstTasa.monto));
+                    dispatch(setTasa(Number(firstTasa.monto)))
                 }
             } catch (error) {
                 console.error('Error al obtener la tasa BCV:', error);

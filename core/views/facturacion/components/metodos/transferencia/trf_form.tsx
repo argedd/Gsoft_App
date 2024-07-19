@@ -7,11 +7,12 @@ import {  transferenciaSchema } from '../../../../../utils/validators/validation
 import CheckBox from '@react-native-community/checkbox';
 import { useEffect, useState } from "react";
 import { ErrorComponent, LoadingComponent, SuccesComponent } from "../../../../../components/components";
-import { paymentValidate } from "../../../../../services/facturacion/facturas_service";
+import { paymentInvoice, paymentValidate } from "../../../../../services/facturacion/facturas_service";
 import DialogNotificationComponent from "../../../../../components/dialogs/dialogNotification";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../../utils/redux/store";
 import { formatDate } from "../../../../../utils/validators/format_date";
+import moment from "moment";
 
 const MethodTrf = () => {
     const { control, handleSubmit, formState: { errors },setValue  } = useForm({
@@ -28,6 +29,7 @@ const MethodTrf = () => {
     const method = useSelector((state: RootState) => state.invoiceState.method);
     const contract = useSelector((state: RootState) => state.contractState.contract);
     const invoice = useSelector((state: RootState) => state.invoiceState.data);
+    const tasa = useSelector((state: RootState) => state.bcvState.tasa);
     const dispatch = useDispatch();
     useEffect(() => {
         if (sender && method === sender.method) {
@@ -46,11 +48,11 @@ const MethodTrf = () => {
     const onSubmit = async (data: any) => {
         const formValidate = {
             "bank": null,
-            "amount": 1096,
+            "amount": null,
             "reference": data.referenceNumber,
             "sender": data.accountNumber,
             "method": 4,
-            "date": "2024-05-30"
+            "date": null
         };
 
         console.log('====================================');
@@ -80,25 +82,36 @@ const MethodTrf = () => {
                       method: 4,
                       reference: data.referenceNumber,
                       amount: responseValidate.monto,
-                      amount_bs: Number('1096'),
+                      amount_bs: Number(responseValidate.monto*tasa).toFixed(2),
                       sender: data.accountNumber,
-                      date: '2024-05-30',
+                      date: moment(new Date()).format('YYYY-MM-DD'),
                       contract:contract ,
                       payment_invoices: [
                         {
                           invoice: invoice.id,
-                          amount: responseValidate.monto,
+                          amount: invoice.amount,
                         },
                       ],
                     },
                   ],
                 }
-              
-             setNotificationType('success');
+                try {
+                    console.log('====================================');
+                    console.log(formPay);
+                    console.log('====================================');
+                    const payment = await paymentInvoice(formPay)
+                    setNotificationType('success');
+                    setShowLoading(false);
+                    setShowNotification(true);
+                } catch (error:any) {
+                    console.log(error.data[0].message);
+                    setNotificationType('error');
+                    setShowLoading(false);
+                    setShowNotification(true);
+                }
 
             }
-            setShowLoading(false);
-            setShowNotification(true);
+
 
         } catch (error) {
             console.log(error);
@@ -170,13 +183,13 @@ const MethodTrf = () => {
                 </View>
                 <View style={styles.formUsuario}>
                     <View style={styles.registrarDatos}>
-                        <View style={styles.iconosSelectParent}>
+                        {/* <View style={styles.iconosSelectParent}>
                             <CheckBox
                                 value={showAlias}
                                 onValueChange={setShowAlias}
                             />
                             <Text style={[styles.registrarDatosDe, styles.textTypo]}>Registrar datos de pago</Text>
-                        </View>
+                        </View> */}
                         {showAlias && (
                             <View style={styles.formUsuario}>
                                 <Controller
@@ -207,7 +220,7 @@ const MethodTrf = () => {
             </View>
 
             <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
-            {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Home"} />}
+            {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Facturacion"} />}
                 {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)}  message={"No pudimos encontrar el pago"}/>}
             </DialogNotificationComponent>
        

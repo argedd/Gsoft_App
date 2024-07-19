@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import moment from 'moment';
-import { percentHeight, percentWidth } from '../../utils/dimensions/dimensions';
 import LayoutPrimary from '../../components/layouts/layout_primary';
 import { BackButton } from '../../components/components';
 import preguntasData from '../../data/preguntasData';
-
-
+import { percentHeight, percentWidth } from '../../utils/dimensions/dimensions';
 
 const PreguntasView = () => {
-    const [time, setTime] = useState<any[]>([]);
     const [activeCollapse, setActiveCollapse] = useState<number | null>(null);
-
-
 
     const toggleCollapse = (index: number) => {
         setActiveCollapse(activeCollapse === index ? null : index);
@@ -70,12 +64,7 @@ const PreguntasView = () => {
     );
 };
 
-
-
 const styles = StyleSheet.create({
-
-
-
     textActive: {
         color: '#fff', // Texto blanco cuando el collapse está activo
     },
@@ -91,7 +80,7 @@ const styles = StyleSheet.create({
     textTypo: {
         fontFamily: "Roboto-Bold",
         fontWeight: "600",
-        fontSize: 16,
+        fontSize: 14,
     },
     lineaDeTiempo: {
         fontSize: 12,
@@ -99,15 +88,16 @@ const styles = StyleSheet.create({
         fontFamily: "Roboto-Regular",
     },
     text: {
-        textAlign: "center",
+        textAlign: "left",
         color: "#fff",
     },
 
     text1: {
         textAlign: "left",
         color: "#fafafa",
-    },
+        marginLeft:8
 
+    },
 
     detalle: {
         fontSize: 14,
@@ -127,7 +117,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between", // Alinea los elementos a lo largo del eje principal (horizontalmente)
     },
-
 
     containerItem: {
         flex: 1,
@@ -151,7 +140,6 @@ const styles = StyleSheet.create({
 
     instanceFlexBox: {
         overflow: "hidden",
-        alignItems: "center",
         height: percentHeight(6), // Ajustado en función de la altura
     },
     arrowIcon: {
@@ -169,7 +157,7 @@ const styles = StyleSheet.create({
         borderStyle: "solid",
         borderColor: "#fafafa",
         borderWidth: 0.5,
-        width: percentWidth(80), // Ajustado en función del ancho
+        width: percentWidth(90), // Ajustado en función del ancho
         paddingHorizontal: percentWidth(4), // Ajustado en función del ancho
         paddingVertical: percentWidth(3), // Ajustado en función del ancho
         marginTop: percentHeight(1.5), // Ajustado en función de la altura
@@ -188,9 +176,8 @@ const styles = StyleSheet.create({
     },
     fecha: {
         flex: 1, // Hace que el texto de la fecha ocupe todo el espacio disponible
-        textAlign: "center", // Centra el texto horizontalmente
+        textAlign: "left", // Cambiado a justificado a la izquierda
     },
-
 });
 
 export default PreguntasView;

@@ -5,11 +5,12 @@ import { BackButton } from '../../components/components';
 import { RootStackParamListRoute } from '../../navigations/routes/app_routes';
 import LayoutPrimary from '../../components/layouts/layout_primary';
 import { RootState } from '../../utils/redux/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootContract } from '../../data/interfaces/contract_interface';
 import { getContractDetail } from '../../services/clients/clients_service';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { setClientType, setPlan } from '../../utils/redux/actions/planActions';
 
 type ConfiguracionViewNavigationProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -20,6 +21,7 @@ interface Props {
 const GestionView: React.FC<Props> = ({ navigation }) => {
   const contract = useSelector((state: RootState) => state.contractState);
   const [contractDetail, setContractDetail] = useState<any>([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchContract = async () => {
@@ -27,7 +29,7 @@ const GestionView: React.FC<Props> = ({ navigation }) => {
         const response = await getContractDetail(contract.contract);
         setContractDetail(response.contract_detail);
       } catch (error) {
-        console.error('Error al obtener las facturas:', error);
+        console.error('Error al obtener los planes:', error);
       }
     };
 
@@ -41,9 +43,27 @@ const GestionView: React.FC<Props> = ({ navigation }) => {
      navigation.navigate("DetalleGtv",{ service: service });
   }
 
+  const handleInternet= (service:any) =>{
+    // console.log('====================================');
+    // console.log(service.plan_type);
+    // console.log('====================================');
+    const client = {
+      client_type: contract.data.client_type_name,
+      id:contract.data.client_type
+  }
+  const planAct={
+    name:service.plan_type.name,
+    id:service.plan_type.id,
+    cost:service.plan_type.cost,
+    profile:service.plan_type.profile,
+  }
+  dispatch(setClientType(client));
+  dispatch(setPlan(planAct));
+     navigation.navigate("GestionInternet",{ service: service });
+  }
+
   const CardComponent = () => (
     <View style={styles.itemContainer}>
-      <Text style={styles.planResidencial}>Plan residencial</Text>
 
       {contractDetail.map((item: any, index: any) => (
         <LinearGradient 
@@ -75,7 +95,7 @@ const GestionView: React.FC<Props> = ({ navigation }) => {
                 ) : (
                   <TouchableOpacity 
                     style={[styles.iconosCambio, styles.iconosCambioFlexBox, styles.redButton]} 
-                    onPress={() => { console.log('Cambiar plan pressed'); }}
+                    onPress={() => handleInternet(item)}
                   >
                     <MaterialCommunityIcons name="refresh-circle" size={24} color="#fff" />
                     <Text style={[styles.cambiarPlan, styles.planTypo]}>Cambiar</Text>

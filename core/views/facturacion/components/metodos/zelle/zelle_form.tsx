@@ -6,7 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import CheckBox from '@react-native-community/checkbox';
 import { useEffect, useState } from "react";
 import { DialogComponent, ErrorComponent, LoadingComponent, SuccesComponent } from "../../../../../components/components";
-import { paymentValidate } from "../../../../../services/facturacion/facturas_service";
+import { paymentInvoice, paymentValidate } from "../../../../../services/facturacion/facturas_service";
 import DialogNotificationComponent from "../../../../../components/dialogs/dialogNotification";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../../utils/redux/store";
@@ -29,7 +29,9 @@ const MethodZelle = () => {
     const sender = useSelector((state: RootState) => state.formState.sender);
     const method = useSelector((state: RootState) => state.invoiceState.method);
     const [selected, setSelected] = useState('');
-
+    const contract = useSelector((state: RootState) => state.contractState.contract);
+    const invoice = useSelector((state: RootState) => state.invoiceState.data);
+    const tasa = useSelector((state: RootState) => state.bcvState.tasa);
     const dispatch = useDispatch();
     useEffect(() => {
         if (sender && method === sender.method) {
@@ -49,11 +51,11 @@ const MethodZelle = () => {
     const onSubmit = async (data: any) => {
         const formValidate = {
             "bank": null,
-            "amount": 1000,
-            "reference": data.referenceNumber,
-            "sender": `${area}${data.phoneNumber}`,
-            "method": 1,
-            "date": formatDate(new Date())
+            "amount": Number(data.amount),
+            "reference": null,
+            "sender": data.titular,
+            "method": 3,
+            "date": data.date
         };
 
         console.log('====================================');
@@ -64,10 +66,6 @@ const MethodZelle = () => {
         try {
             const responseValidate = await paymentValidate(formValidate);
 
-            console.log('====================================');
-            console.log(responseValidate);
-            console.log('====================================');
-
             if ('error' in responseValidate) {
                 console.log(responseValidate.error);
                 setNotificationType('error');
@@ -75,11 +73,43 @@ const MethodZelle = () => {
                 console.log(responseValidate.data.error);
                 setNotificationType('error');
             } else {
-                console.log('Payment validation successful');
-                setNotificationType('success');
+                const formPay = {
+                    payment: [
+                        {
+                            bank: null,
+                            method: 3,
+                            reference: null,
+                            amount: responseValidate.monto,
+                            amount_bs:Number(responseValidate.monto*tasa).toFixed(2),
+                            sender: data.titular,
+                            date: data.date ,
+                            contract: contract,
+                            payment_invoices: [
+                                {
+                                    invoice: invoice.id,
+                                    amount: invoice.amount,
+                                },
+                            ],
+                        },
+                    ],
+                }
+                try {
+                    console.log('====================================');
+                    console.log(formPay);
+                    console.log('====================================');
+                    const payment = await paymentInvoice(formPay)
+                    setNotificationType('success');
+                    setShowLoading(false);
+                    setShowNotification(true);
+                } catch (error:any) {
+                    console.log(error.data);
+                    setNotificationType('error');
+                    setShowLoading(false);
+                    setShowNotification(true);
+                }
+
             }
-            setShowLoading(false);
-            setShowNotification(true);
+       
 
         } catch (error) {
             console.log(error);
@@ -182,13 +212,13 @@ const MethodZelle = () => {
                 </View>
                 <View style={styles.formUsuario}>
                     <View style={styles.registrarDatos}>
-                        <View style={styles.iconosSelectParent}>
+                        {/* <View style={styles.iconosSelectParent}>
                             <CheckBox
                                 value={showAlias}
                                 onValueChange={setShowAlias}
                             />
                             <Text style={[styles.registrarDatosDe, styles.textTypo]}>Registrar datos de pago</Text>
-                        </View>
+                        </View> */}
                         {showAlias && (
                             <View style={styles.formUsuario}>
                                 <Controller
@@ -219,7 +249,7 @@ const MethodZelle = () => {
             </View>
 
             <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
-                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Home"} />}
+                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Facturacion"} />}
                 {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"No pudimos encontrar el pago"} />}
             </DialogNotificationComponent>
 
@@ -237,7 +267,7 @@ const MethodZelle = () => {
                         monthTextColor: "#fff",
                         arrowColor: "#fff"
                     }}
-                    onDayPress={day => {
+                    onDayPress={(day:any) => {
 
                         setSelected(day.dateString);
                         setValue('date', day.dateString);

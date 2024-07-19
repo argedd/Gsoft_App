@@ -173,7 +173,10 @@ const EstadisticasView: React.FC<Props> = ({ navigation }) => {
       <View style={styles.containerItems}>
         <View style={styles.chartWrapper}>
           {renderTitle()}
-          {data.length > 0 ? (
+          {totalBajada === 0 && totalSubida === 0 ? (
+            <Text style={{ color: 'white', marginTop: percentHeight(2) }}>Cliente sin consumo</Text>
+          ) :
+          data.length > 0 ? (
             <BarChart
               data={chartData}
               barWidth={percentWidth(10)}

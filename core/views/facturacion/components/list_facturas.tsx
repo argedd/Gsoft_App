@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, StyleSheet, View, TouchableOpacity, FlatList, Image, GestureResponderEvent } from "react-native";
+import { Text, StyleSheet, View, TouchableOpacity, FlatList, Image, GestureResponderEvent, Linking } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ResultInvoices } from "../../../data/interfaces/invoices_interface";
 import { getInvoice } from "../../../services/facturacion/facturas_service";
@@ -21,8 +21,12 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp>(); // Use the correct type here
 
-  const handleDescargar = async (invoice:number) => {
-   
+  const handleDescargar = async (url:string) => {
+
+    if(url!=null){
+      Linking.openURL(url)
+
+    }
   };
 
   const handlePay = async (invoice:number) => {
@@ -34,7 +38,7 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
 
   const renderInvoiceItem = ({ item }: { item: ResultInvoices }) => (
     
-    <TouchableOpacity style={styles.frameFlexBox} onPress={()=>item.status ==22 ? handleDescargar(item.id):handlePay( item.id)}>
+    <TouchableOpacity style={styles.frameFlexBox} onPress={()=>item.status ==22 ? handleDescargar(item.url):handlePay( item.id)}>
 
       <View>
         <Text style={[styles.planPlatino, styles.abril10Typo]}>N°{item.id}</Text>
@@ -44,8 +48,11 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
       <Text style={[styles.bs, item.status == 22 ? styles.pagado : styles.other]}>{item.status_name}</Text>
 
       <View style={styles.botonesFlexBox}>
-        {item.status == 23 ?(<MaterialCommunityIcons name="chevron-right" size={24} color="#fff" />)
-        :(<Image source={require('../../../assets/icons/facturacion/descargar.png')} style={styles.icon} />)}
+        {item.status == 23  ?(<MaterialCommunityIcons name="chevron-right" size={24} color="#fff" />)
+        :(      
+          item.url ? (
+            <Image source={require('../../../assets/icons/facturacion/descargar.png')} style={styles.icon} />
+          ) : <MaterialCommunityIcons name="check-circle" size={22} color="#fff" /> )}
 
       </View>
     </TouchableOpacity>

@@ -1,6 +1,6 @@
 // App.js
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, FlatList, StyleSheet, Alert, Text } from 'react-native';
 import MenuItem from '../../components/list/listMenuItem';
 import menuItems, { IMenuItem } from '../../data/homeMenuItems';
 import HeaderHome from './components/header_home';
@@ -25,7 +25,7 @@ interface Props {
 
 const HomeView: React.FC<Props> = ({navigation}) => {
   const [contracts, setContracts] = useState([]);
-
+  
   useEffect(() => {
   const getClient = async ()=>{
     const dataUser = await getData('user');
@@ -39,7 +39,7 @@ const HomeView: React.FC<Props> = ({navigation}) => {
 
   const handleFabPress = () => {
     // Maneja la acción del botón aquí
-    navigation.navigate("Preguntas");
+    navigation.navigate("Asistencia");
   };
 
   const renderItem = ({ item }:{ item: IMenuItem }) => (

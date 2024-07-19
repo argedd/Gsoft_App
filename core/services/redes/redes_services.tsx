@@ -13,6 +13,27 @@ const api = gsoftAPI;
  
 };
 
+const getStatusOnu = async (contract:string): Promise<any> => {
+
+    const response = await api.get<any>(`/network/get_onu_status/${contract}/`);
+    return response.data; // Devuelve solo los datos de la respuesta
+ 
+};
+
+const getSignalOnu = async (contract:string): Promise<any> => {
+
+    const response = await api.get<any>(`/network/get_onu_signal/${contract}/`);
+    return response.data; // Devuelve solo los datos de la respuesta
+ 
+};
+
+const rebootOnu = async (contract:string): Promise<any> => {
+
+    const response = await api.get<any>(`/network/reboot_onu/${contract}/`);
+    return response.data; // Devuelve solo los datos de la respuesta
+ 
+};
+
 // const putAccountGtv = async (id:any,body:any): Promise<any> => {
 //     const response = await api.put<any>(`/gtv/account/${id}/`,body);
 //     return response.data; // Devuelve solo los datos de la respuesta
@@ -53,6 +74,9 @@ const api = gsoftAPI;
 
 export{
     getConsumo,
+    getStatusOnu,
+    rebootOnu,
+    getSignalOnu,
 
 
 }

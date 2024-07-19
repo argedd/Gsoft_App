@@ -8,3 +8,8 @@ export const gtvSchema = Yup.object().shape({
     .required('PIN es Requerido.')
     .min(4,'Pin debe ser de 4 Digitos')
   });
+
+  export const internetSchema = Yup.object().shape({
+    client_type: Yup.string(),
+    plan: Yup.string(),
+  });

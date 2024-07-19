@@ -6,6 +6,7 @@ import { gsoftAPI } from "../../utils/interceptor/interceptor";
 const api = gsoftAPI;
 const validateApi = axios.create({
   baseURL: "https://core.gsoft.app/api/gsoft/",
+  // baseURL: "http://192.168.196.206:8001/api/gsoft/",
 }); 
 
 const getInvoices = async (contract: number): Promise<RootInvoices> => {
@@ -37,8 +38,18 @@ const paymentValidate = async (formValidate: any) => {
  
 };
 
+
+const paymentInvoice = async (formPayment: any): Promise<any> => {
+   
+  const response = await api.post<any>(`/payments/`, formPayment) 
+  return response.data;
+  // Devuelve solo los datos de la respuesta
+
+};
+
 export{
   getInvoices,
   getInvoice,
-  paymentValidate
+  paymentValidate,
+  paymentInvoice
 }

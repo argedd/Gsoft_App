@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -10,6 +10,7 @@ import { RootState } from '../../utils/redux/store';
 import ListInvoices from './components/list_facturas';
 import { getInvoices } from '../../services/facturacion/facturas_service';
 import { ResultInvoices, RootInvoices } from '../../data/interfaces/invoices_interface';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 
@@ -21,21 +22,24 @@ interface Props {
 
 
 const FacturacionView = ({ navigation }:Props) => {
-  const contract = useSelector((state:RootState) => state.contractState);
+  const contract = useSelector((state:RootState) => state.contractState.contract);
   const [invoices, setInvoices] = useState<ResultInvoices[]>([]);
 
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const response = await getInvoices(contract.contract);
-        setInvoices(response.results);
-      } catch (error) {
-        console.log('Error al obtener las facturas:', error);
-      }
-    };
-  
-    fetchInvoices();
-  }, [contract.contract]); // Ejecutar el efecto cuando el contrato cambie
+  useFocusEffect(
+    useCallback(() => {
+      const fetchInvoices = async () => {
+        try {
+          const response = await getInvoices(contract);
+
+          setInvoices(response.results);
+        } catch (error) {
+          console.log('Error al obtener las facturas:', error);
+        }
+      };
+
+      fetchInvoices();
+    }, []) // Ejecutar el efecto cuando el contrato cambie
+  );
   
 
   const FacturacionComponent =() =>(

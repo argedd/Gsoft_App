@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   },
   vectorParent: {
     borderRadius: percentWidth(4.25),
-    height: percentHeight(17.75),
+    height: percentHeight(19.75),
     padding: percentWidth(4.25),
     backgroundColor: 'transparent',
     alignItems: 'center',
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
     width: percentWidth(80),
     height: percentHeight(10),
     textAlignVertical: 'top',
-    color: '#000',
+    color: '#fff',
   },
 });
 

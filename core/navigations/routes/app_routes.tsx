@@ -21,5 +21,7 @@ export type RootStackParamListRoute = {
     ChangePassword:any,
     EditDatos:any
     Preguntas:any
+    Asistencia:any
+    GestionInternet:{service:any}
   };
   
