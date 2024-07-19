@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { StackNavigationProp } from '@react-navigation/stack';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BackButton } from '../../../components/components';
 import { RootStackParamListRoute } from '../../../navigations/routes/app_routes';
 import CardOnu from './components/card_onu';
@@ -14,32 +14,35 @@ interface Props {
   navigation: ConfiguracionViewNavigationProp;
 }
 
-const ConfiguracionComponent =() =>(
+const ConfiguracionComponent = () => (
   <View style={styles.container}>
-  <BackButton title={'Configuración de Router'} />
-  {/* <CardOnu/> */}
+    <BackButton title={'Configuración de Router'} />
+    <ScrollView>
+      <CardOnu />
+
+    </ScrollView>
 
   </View>
 
 );
-const ConfiguracionView : React.FC<Props> = ({ navigation }) => {
- 
-    return (
+const ConfiguracionView: React.FC<Props> = ({ navigation }) => {
 
-      <LayoutPrimary>
-        <ConfiguracionComponent />
-      </LayoutPrimary>
-      
-    );
-  
+  return (
+
+    <LayoutPrimary>
+      <ConfiguracionComponent />
+    </LayoutPrimary>
+
+  );
+
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      // marginTop: 50,
-    },
+  container: {
+    flex: 1,
+    // marginTop: 50,
+  },
 
-    
-  });
+
+});
 export default ConfiguracionView

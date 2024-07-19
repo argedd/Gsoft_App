@@ -8,16 +8,17 @@ import CheckBox from '@react-native-community/checkbox';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useEffect, useState } from "react";
 import { DialogComponent, ErrorComponent, LoadingComponent, SuccesComponent } from "../../../../../components/components";
-import { paymentValidate } from "../../../../../services/facturacion/facturas_service";
+import { paymentInvoice, paymentValidate } from "../../../../../services/facturacion/facturas_service";
 import DialogNotificationComponent from "../../../../../components/dialogs/dialogNotification";
 import CardPhones from "./components/card_phones";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../../utils/redux/store";
 import { setAreaCode } from '../../../../../utils/redux/actions/formActions';
 import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
 
 const MethodPm = () => {
-    const { control, handleSubmit, formState: { errors },setValue  } = useForm({
+    const { control, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(pagoMovilSchema),
         shouldUnregister: false
     });
@@ -31,6 +32,7 @@ const MethodPm = () => {
     const method = useSelector((state: RootState) => state.invoiceState.method);
     const contract = useSelector((state: RootState) => state.contractState.contract);
     const invoice = useSelector((state: RootState) => state.invoiceState.data);
+    const tasa = useSelector((state: RootState) => state.bcvState.tasa);
     const dispatch = useDispatch();
     useEffect(() => {
         if (sender && method === sender.method) {
@@ -42,7 +44,7 @@ const MethodPm = () => {
             setValue('phoneNumber', remainingDigits); // Set initial phone number value
         }
     }, [sender, method, setValue, dispatch]);
-    
+
 
     const toggleDialog = () => {
         setShowDialog(!showDialog);
@@ -51,24 +53,21 @@ const MethodPm = () => {
     const onSubmit = async (data: any) => {
         const formValidate = {
             "bank": null,
-            "amount": 1096,
+            "amount": null,
             "reference": data.referenceNumber,
             "sender": `${area}${data.phoneNumber}`,
             "method": 1,
-            "date": "2024-05-30"
+            "date": null,
+            // "date": moment(new Date()).format('YYYY-MM-DD')
         };
 
-        console.log('====================================');
-        console.log(formValidate);
-        console.log('====================================');
+
 
         setShowLoading(true);
         try {
             const responseValidate = await paymentValidate(formValidate);
 
-            console.log('aqui vali====================================');
-            console.log(responseValidate);
-            console.log('====================================');
+
 
             if ('error' in responseValidate) {
                 console.log(responseValidate.error);
@@ -77,36 +76,49 @@ const MethodPm = () => {
                 console.log(responseValidate.data.error);
                 setNotificationType('error');
             } else {
-                console.log('Payment validation successful');
-               const formPay={ 
-                payment: [
-                    {
-                      bank: null,
-                      method: 1,
-                      reference: data.referenceNumber,
-                      amount: responseValidate.monto,
-                      amount_bs: Number('1096'),
-                      sender: `${area}${data.phoneNumber}`,
-                      date: '2024-05-30',
-                      contract:contract ,
-                      payment_invoices: [
+                // console.log(invoice);
+                const formPay = {
+                    payment: [
                         {
-                          invoice: invoice.id,
-                          amount: responseValidate.monto,
+                            bank: null,
+                            method: 1,
+                            reference: data.referenceNumber,
+                            amount: responseValidate.monto,
+                            amount_bs: Number(responseValidate.monto*tasa).toFixed(2),
+                            sender: `${area}${data.phoneNumber}`,
+                            date: moment(new Date()).format('YYYY-MM-DD'),
+                            contract: contract,
+                            payment_invoices: [
+                                {
+                                    invoice: invoice.id,
+                                    amount: invoice.amount,
+                                },
+                            ],
                         },
-                      ],
-                    },
-                  ],
+                    ],
                 }
-              
-             setNotificationType('success');
+                try {
+                    console.log('====================================');
+                    console.log(formPay);
+                    console.log('====================================');
+                    const payment = await paymentInvoice(formPay)
+                    setNotificationType('success');
+                    setShowLoading(false);
+                    setShowNotification(true);
+                } catch (error:any) {
+                    console.log(error.data[0].message);
+                    setNotificationType('error');
+                    setShowLoading(false);
+                    setShowNotification(true);
+                }
+
+
 
             }
-            setShowLoading(false);
-            setShowNotification(true);
+
 
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             setNotificationType('error');
             setShowLoading(false);
             setShowNotification(true);
@@ -165,11 +177,11 @@ const MethodPm = () => {
                                     </View>
                                 )}
                             />
-                            
+
                         </View>
                         {errors.phoneNumber && (
-              <Text style={styles.errorText}>{(errors.phoneNumber as any).message}</Text>
-            )}
+                            <Text style={styles.errorText}>{(errors.phoneNumber as any).message}</Text>
+                        )}
                     </View>
                     <View style={styles.formUsuario}>
                         <Text style={[styles.nDeTelfono, styles.textTypo]}>Nº de referencia</Text>
@@ -194,18 +206,18 @@ const MethodPm = () => {
                         />
                     </View>
                     {errors.referenceNumber && (
-              <Text style={styles.errorText}>{(errors.referenceNumber as any).message}</Text>
-            )}
+                        <Text style={styles.errorText}>{(errors.referenceNumber as any).message}</Text>
+                    )}
                 </View>
                 <View style={styles.formUsuario}>
                     <View style={styles.registrarDatos}>
-                        <View style={styles.iconosSelectParent}>
+                        {/* <View style={styles.iconosSelectParent}>
                             <CheckBox
                                 value={showAlias}
                                 onValueChange={setShowAlias}
                             />
                             <Text style={[styles.registrarDatosDe, styles.textTypo]}>Registrar datos de pago</Text>
-                        </View>
+                        </View> */}
                         {showAlias && (
                             <View style={styles.formUsuario}>
                                 <Controller
@@ -236,11 +248,11 @@ const MethodPm = () => {
             </View>
 
             <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
-                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Home"} />}
-                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)}  message={"No pudimos encontrar el pago"}/>}
+                {notificationType === 'success' && <SuccesComponent onClose={() => setShowNotification(false)} message={"Tu operación ha sido procesada con éxito"} route={"Facturacion"} />}
+                {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={"No pudimos encontrar el pago"} />}
             </DialogNotificationComponent>
             <DialogComponent visible={showDialog} onClose={toggleDialog}>
-                <CardPhones onClose={()=>setShowDialog(false)}/>
+                <CardPhones onClose={() => setShowDialog(false)} />
             </DialogComponent>
         </View>
     );
@@ -254,7 +266,7 @@ const styles = StyleSheet.create({
     errorText: {
         color: "red",
         fontSize: 12,
-      },
+    },
     textTypo: {
         fontFamily: "Roboto-Regular",
         textAlign: "left",

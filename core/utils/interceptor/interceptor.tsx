@@ -5,6 +5,7 @@ import eventEmitter from "../../eventEmitter";
 export const gsoftAPI = axios.create({
     baseURL: "https://core.gsoft.app/api/gsoft/portal",
     // baseURL:"http://192.168.196.251:9000/api/gsoft/portal"
+    // baseURL:"http://192.168.196.206:8001/api/gsoft/portal"
 });
 
 gsoftAPI.interceptors.request.use(async (config) =>  {

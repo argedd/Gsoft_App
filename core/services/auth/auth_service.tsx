@@ -5,6 +5,7 @@ import { removeData } from '../../utils/asyncStorage/asyncStorage';
 const gsoftAuthAPI = axios.create({
   baseURL: "https://core.gsoft.app/portal",
   // baseURL: "http://192.168.196.251:9000/portal",
+  // baseURL: "http://192.168.196.206:8001/portal",
 });
 
  const login = async (data: any) => {
