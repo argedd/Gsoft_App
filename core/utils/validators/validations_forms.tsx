@@ -17,81 +17,105 @@ export const recuperarSchema = Yup.object().shape({
     .required('Cédula es Requerida.')
     .matches(/^[0-9]+$/, 'la Cédula debe ser numérica')
     .min(6, 'la Cédula debe tener al menos 6 dígitos'),
-    digito: Yup.string()
+  digito: Yup.string()
 });
 
 
 export const pagoMovilSchema = Yup.object().shape({
   areaCode: Yup.string(),
-    phoneNumber: Yup.string()
-  .required('Teléfono es Requerido.')
+  phoneNumber: Yup.string()
+    .required('Teléfono es Requerido.')
     .matches(/^[0-9]+$/, 'eléfono debe ser numéric0')
     .max(7, 'la Operadora debe tener maximo 7 dígitos')
     .min(7, 'la Operadora debe tener maximo 7 dígitos'),
-    referenceNumber: Yup.string()
-  .required('Referencia es Requerida.')
-  .matches(/^[0-9]+$/, 'la referencia debe ser numérica')
-  .min(6, 'la referencia debe tener al menos 6 dígitos'),
+  referenceNumber: Yup.string()
+    .required('Referencia es Requerida.')
+    .matches(/^[0-9]+$/, 'la referencia debe ser numérica')
+    .min(6, 'la referencia debe tener al menos 6 dígitos'),
   alias: Yup.string()
+    .test('required-if-show-alias', 'Alias es Requerido y tener almenos 3 caracteres', (value, context) => {
+
+      if (context.options.context?.showAlias === true) {
+        return value !== undefined && value.length >= 3;
+      } else {
+        return true;
+      }
+    })
 
 });
 
 export const transferenciaSchema = Yup.object().shape({
   accountNumber: Yup.string()
-  .required('Cuenta es Requerida.')
-  .matches(/^[0-9]+$/, 'la cuenta debe ser numérica')
-  .min(6, 'Nro de Cuenta debe tener al menos 6 dígitos'),
+    .required('Cuenta es Requerida.')
+    .matches(/^[0-9]+$/, 'la cuenta debe ser numérica')
+    .min(6, 'Nro de Cuenta debe tener al menos 6 dígitos'),
   referenceNumber: Yup.string()
-  .required('Referencia es Requerida.')
-  .matches(/^[0-9]+$/, 'la referencia debe ser numérica')
-  .min(6, 'la referencia debe tener al menos 6 dígitos'),
+    .required('Referencia es Requerida.')
+    .matches(/^[0-9]+$/, 'la referencia debe ser numérica')
+    .min(6, 'la referencia debe tener al menos 6 dígitos'),
   alias: Yup.string()
+    .test('required-if-show-alias', 'Alias es Requerido y tener almenos 3 caracteres', (value, context) => {
+
+      if (context.options.context?.showAlias === true) {
+        return value !== undefined && value.length >= 3;
+      } else {
+        return true;
+      }
+    })
 
 });
 
 
 export const zelleSchema = Yup.object().shape({
   titular: Yup.string()
-  .required('Titular es Requerido.'),
+    .required('Titular es Requerido.'),
   amount: Yup.string()
-  .required('Monto es Requerido.'),
+    .required('Monto es Requerido.'),
   date: Yup.string()
-  .required('Fecha de pago requerida.'),
+    .required('Fecha de pago requerida.'),
   alias: Yup.string()
+    .test('required-if-show-alias', 'Alias es Requerido y tener almenos 3 caracteres', (value, context) => {
+
+      if (context.options.context?.showAlias === true) {
+        return value !== undefined && value.length >= 3;
+      } else {
+        return true;
+      }
+    })
 
 });
 
 
 export const pagoMovilRegSchema = Yup.object().shape({
   areaCode: Yup.string(),
-    phoneNumber: Yup.string()
-  .required('Teléfono es Requerido.')
+  phoneNumber: Yup.string()
+    .required('Teléfono es Requerido.')
     .matches(/^[0-9]+$/, 'eléfono debe ser numéric0')
     .max(7, 'la Operadora debe tener maximo 7 dígitos')
     .min(7, 'la Operadora debe tener maximo 7 dígitos'),
   alias: Yup.string()
-  .required('Alias es Requerido')
+    .required('Alias es Requerido')
 
 });
 
 export const trfRegSchema = Yup.object().shape({
   accountNumber: Yup.string()
-  .required('Cuenta es Requerida.')
-  .matches(/^[0-9]+$/, 'la cuenta debe ser numérica')
-  .min(6, 'Nro de Cuenta debe tener al menos 6 dígitos'),
+    .required('Cuenta es Requerida.')
+    .matches(/^[0-9]+$/, 'la cuenta debe ser numérica')
+    .min(6, 'Nro de Cuenta debe tener al menos 6 dígitos'),
   alias: Yup.string()
-  .required('Alias es Requerido')
+    .required('Alias es Requerido')
 
 });
 
 
 export const zelleRegSchema = Yup.object().shape({
   titular: Yup.string()
-  .required('Titular es Requerido.'),
+    .required('Titular es Requerido.'),
   alias: Yup.string()
-  .required('Alias es Requerido'),
+    .required('Alias es Requerido'),
   email: Yup.string()
-  .email('Correo electrónico no es válido.')
-  .required('Correo electrónico es Requerido.')
+    .email('Correo electrónico no es válido.')
+    .required('Correo electrónico es Requerido.')
 });
 

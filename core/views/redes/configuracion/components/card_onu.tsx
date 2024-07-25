@@ -77,25 +77,19 @@ const CardOnu = () => {
     const fetchContract = async () => {
       try {
         const response = await getContractDetail(contract.contract);
-        console.log('====================================');
-        console.log(response.contract_detail);
-        console.log('====================================');
+ 
         const filteredContractInternet = response.contract_detail.filter((contract: any) => contract.plan_type.service_type === 1);
-        // console.log('====================================');
-        // console.log(filteredContractInternet[0]);
-        // console.log('====================================');
+  
         setContractDetail(filteredContractInternet[0]);
         const status = await getStatusOnu(contract.contract);
         await setStatusOnu(status);
         const signal = await getSignalOnu(contract.contract)
-        console.log('====================================');
-        console.log(signal);
-        console.log('====================================');
+
         await setSignalOnu(signal);
         setShowLoading(false);
       } catch (error) {
         setShowLoading(false);
-        console.error('Error al obtener datos:', error);
+        console.log('Error al obtener datos:', error);
       }
     };
 
@@ -119,7 +113,7 @@ const CardOnu = () => {
       {showLoading && <LoadingComponent isLoading={showLoading} />}
 
       <View style={styles.frameParent}>
-        {contractDetail ? (
+        {contractDetail && contractDetail.service_detail[0] ? (
 
           <>
             {/* <LinearGradient style={[styles.frameGroup, styles.frameGroupBorder]} locations={[0.04, 1]} colors={['rgba(182, 182, 180, 0.48)', 'rgba(80, 80, 79, 0.48)']} useAngle={true} angle={180}>

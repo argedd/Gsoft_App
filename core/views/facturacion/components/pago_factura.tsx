@@ -137,7 +137,7 @@ const PagoFacturaView: React.FC<Props> = ({ navigation }) => {
                             <Text style={styles.saldoAFavor}>Monto a pagar</Text>
                             <Text style={styles.text2}>{totalBs.toFixed(2)}.Bs</Text>
                         </View>
-                        <Text style={[styles.ref5, styles.ref5Clr]}>Ref: {Number(invoiceDetail?.amount)-Number(invoiceDetail?.balance)} USD</Text>
+                        <Text style={[styles.ref5, styles.ref5Clr]}>Ref: {(Number(invoiceDetail?.amount)-Number(invoiceDetail?.balance)).toFixed(2)} USD</Text>
 
                     </View>
                 </View>

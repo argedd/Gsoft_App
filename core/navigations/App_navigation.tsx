@@ -30,10 +30,11 @@ import EditDatosView from '../views/cliente/cuenta/editar_datos';
 import eventEmitter from '../eventEmitter';
 import { RootStackParamListRoute } from './routes/app_routes';
 import { StackNavigationProp } from '@react-navigation/stack';
-
+import messaging from '@react-native-firebase/messaging';
 const Stack = createNativeStackNavigator();
 
 const AppNavigation = () => {
+
     return (
         <NavigationContainer>
             <MainStackNavigator />

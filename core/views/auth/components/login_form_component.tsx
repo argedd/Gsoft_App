@@ -122,10 +122,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
 
     TouchID.authenticate('To access your account', optionalConfigObject)
       .then((success: any) => {
-        // Authenticate with the captured credentials
-        console.log('====================================');
-        console.log(credentials);
-        console.log('====================================');
+
         setShowLoading(true);
         login(credentials)
           .then(response => {
@@ -167,7 +164,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       {showLoading && <LoadingComponent isLoading={showLoading} />}
 
-      <Image style={styles.capa2Icon} resizeMode="cover" source={require("../../../assets/logo_gnetwork.png")} />
+      <Image style={styles.capa2Icon} resizeMode="contain" source={require("../../../assets/logo_gnetwork.png")} />
       <View style={styles.bienvenidoParent}>
         <Text style={[styles.bienvenido, styles.bienvenidoClr]}>Bienvenido</Text>
         <View style={styles.frameParent}>
@@ -403,15 +400,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   capa2Icon: {
-    height: "5.5%",
-    width: "51%",
-    top: "20.33%",
+    // height: "5.5%",
+    width: percentWidth(51),
+    top: percentHeight(23),
     right: "24.44%",
     bottom: "80%",
     left: "25.56%",
     maxWidth: "100%",
     maxHeight: "100%",
-    position: "absolute",
+    // position: "absolute",
     overflow: "hidden",
   },
   botonesBotnSegundario: {

@@ -14,12 +14,11 @@ import { formatDate } from "../../../../../utils/validators/format_date";
 import { zelleSchema } from "../../../../../utils/validators/validations_forms";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { saveMethods } from "../../../../../services/facturacion/methods_service";
+import { getData } from "../../../../../utils/asyncStorage/asyncStorage";
 
 const MethodZelle = () => {
-    const { control, handleSubmit, formState: { errors }, setValue } = useForm({
-        resolver: yupResolver(zelleSchema),
-        shouldUnregister: false
-    });
+
     const [showAlias, setShowAlias] = React.useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
@@ -33,6 +32,11 @@ const MethodZelle = () => {
     const invoice = useSelector((state: RootState) => state.invoiceState.data);
     const tasa = useSelector((state: RootState) => state.bcvState.tasa);
     const dispatch = useDispatch();
+    const { control, handleSubmit, formState: { errors }, setValue } = useForm({
+        resolver: yupResolver(zelleSchema),
+        context: { showAlias },
+        shouldUnregister: false
+    });
     useEffect(() => {
         if (sender && method === sender.method) {
 
@@ -58,20 +62,20 @@ const MethodZelle = () => {
             "date": data.date
         };
 
-        console.log('====================================');
-        console.log(formValidate);
-        console.log('====================================');
+
 
         setShowLoading(true);
         try {
             const responseValidate = await paymentValidate(formValidate);
 
             if ('error' in responseValidate) {
-                console.log(responseValidate.error);
+                setShowLoading(false);
                 setNotificationType('error');
+                setShowNotification(true);
             } else if (responseValidate.data && responseValidate.data.error) {
-                console.log(responseValidate.data.error);
+                setShowLoading(false);
                 setNotificationType('error');
+                setShowNotification(true);
             } else {
                 const formPay = {
                     payment: [
@@ -80,9 +84,9 @@ const MethodZelle = () => {
                             method: 3,
                             reference: null,
                             amount: responseValidate.monto,
-                            amount_bs:Number(responseValidate.monto*tasa).toFixed(2),
+                            amount_bs: Number(responseValidate.monto * tasa).toFixed(2),
                             sender: data.titular,
-                            date: data.date ,
+                            date: data.date,
                             contract: contract,
                             payment_invoices: [
                                 {
@@ -94,14 +98,31 @@ const MethodZelle = () => {
                     ],
                 }
                 try {
-                    console.log('====================================');
-                    console.log(formPay);
-                    console.log('====================================');
+               
                     const payment = await paymentInvoice(formPay)
+                    const dataUser = await getData('user');
+                    
+                    const ze = {
+                        "sender": data.titular,
+                        "name": data.alias,
+                        "email": data.email,
+                        "method": 3,
+                        "client": dataUser.client.id,
+                    };
+                    try {
+                        const response = await saveMethods(ze);
+                        setNotificationType('success');
+                        setShowLoading(false);
+                        setShowNotification(true);
+                    } catch (error) {
+                        setNotificationType('success');
+                        setShowLoading(false);
+                        setShowNotification(true);
+                    }
                     setNotificationType('success');
                     setShowLoading(false);
                     setShowNotification(true);
-                } catch (error:any) {
+                } catch (error: any) {
                     console.log(error.data);
                     setNotificationType('error');
                     setShowLoading(false);
@@ -109,7 +130,7 @@ const MethodZelle = () => {
                 }
 
             }
-       
+
 
         } catch (error) {
             console.log(error);
@@ -212,13 +233,13 @@ const MethodZelle = () => {
                 </View>
                 <View style={styles.formUsuario}>
                     <View style={styles.registrarDatos}>
-                        {/* <View style={styles.iconosSelectParent}>
+                        <View style={styles.iconosSelectParent}>
                             <CheckBox
                                 value={showAlias}
                                 onValueChange={setShowAlias}
                             />
                             <Text style={[styles.registrarDatosDe, styles.textTypo]}>Registrar datos de pago</Text>
-                        </View> */}
+                        </View>
                         {showAlias && (
                             <View style={styles.formUsuario}>
                                 <Controller
@@ -237,6 +258,9 @@ const MethodZelle = () => {
                                         </View>
                                     )}
                                 />
+                                {errors.alias && (
+                                    <Text style={styles.errorText}>{(errors.alias as any).message}</Text>
+                                )}
                             </View>
                         )}
                     </View>
@@ -267,7 +291,7 @@ const MethodZelle = () => {
                         monthTextColor: "#fff",
                         arrowColor: "#fff"
                     }}
-                    onDayPress={(day:any) => {
+                    onDayPress={(day: any) => {
 
                         setSelected(day.dateString);
                         setValue('date', day.dateString);

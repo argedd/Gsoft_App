@@ -38,7 +38,11 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
 
   const renderInvoiceItem = ({ item }: { item: ResultInvoices }) => (
     
-    <TouchableOpacity style={styles.frameFlexBox} onPress={()=>item.status ==22 ? handleDescargar(item.url):handlePay( item.id)}>
+    <TouchableOpacity style={styles.frameFlexBox} onPress={()=>item.status ==22  ? handleDescargar(item.url):
+      ( item.status == 23 ?
+      handlePay( item.id):('')
+      )}
+    >
 
       <View>
         <Text style={[styles.planPlatino, styles.abril10Typo]}>N°{item.id}</Text>

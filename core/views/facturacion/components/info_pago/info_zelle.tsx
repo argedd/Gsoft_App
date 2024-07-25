@@ -21,7 +21,7 @@ const InfoZelleComponent = () => {
           </View>
           <View style={styles.frameGroup}>
             <Text style={[styles.datosDelPago, styles.textTypo]}>Monto a pagar</Text>
-            <Text style={[styles.bs, styles.bsTypo]}>{amount} USD</Text>
+            <Text style={[styles.bs, styles.bsTypo]}>{amount.toFixed(2)} USD</Text>
           </View>
         </View>
        

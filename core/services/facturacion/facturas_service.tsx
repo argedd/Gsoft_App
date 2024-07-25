@@ -7,6 +7,8 @@ const api = gsoftAPI;
 const validateApi = axios.create({
   baseURL: "https://core.gsoft.app/api/gsoft/",
   // baseURL: "http://192.168.196.206:8001/api/gsoft/",
+  // baseURL: "http://192.168.196.251:9000/api/gsoft",
+
 }); 
 
 const getInvoices = async (contract: number): Promise<RootInvoices> => {

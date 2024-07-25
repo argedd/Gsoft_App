@@ -13,12 +13,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../../utils/redux/store";
 import { formatDate } from "../../../../../utils/validators/format_date";
 import moment from "moment";
+import { saveMethods } from "../../../../../services/facturacion/methods_service";
+import { getData } from "../../../../../utils/asyncStorage/asyncStorage";
 
 const MethodTrf = () => {
-    const { control, handleSubmit, formState: { errors },setValue  } = useForm({
-        resolver: yupResolver(transferenciaSchema),
-        shouldUnregister: false
-    });
+  
     const [showAlias, setShowAlias] = React.useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
@@ -31,6 +30,11 @@ const MethodTrf = () => {
     const invoice = useSelector((state: RootState) => state.invoiceState.data);
     const tasa = useSelector((state: RootState) => state.bcvState.tasa);
     const dispatch = useDispatch();
+    const { control, handleSubmit, formState: { errors },setValue  } = useForm({
+        resolver: yupResolver(transferenciaSchema),
+        context: { showAlias },
+        shouldUnregister: false
+    });
     useEffect(() => {
         if (sender && method === sender.method) {
             const senderDigits = sender.sender;
@@ -55,24 +59,22 @@ const MethodTrf = () => {
             "date": null
         };
 
-        console.log('====================================');
-        console.log(formValidate);
-        console.log('====================================');
+      
 
         setShowLoading(true);
         try {
             const responseValidate = await paymentValidate(formValidate);
 
-            console.log('aqui vali====================================');
-            console.log(responseValidate);
-            console.log('====================================');
+         
 
             if ('error' in responseValidate) {
-                console.log(responseValidate.error);
+                setShowLoading(false);
                 setNotificationType('error');
+                setShowNotification(true);
             } else if (responseValidate.data && responseValidate.data.error) {
-                console.log(responseValidate.data.error);
+                setShowLoading(false);
                 setNotificationType('error');
+                setShowNotification(true);
             } else {
                 console.log('Payment validation successful');
                const formPay={ 
@@ -84,7 +86,7 @@ const MethodTrf = () => {
                       amount: responseValidate.monto,
                       amount_bs: Number(responseValidate.monto*tasa).toFixed(2),
                       sender: data.accountNumber,
-                      date: moment(new Date()).format('YYYY-MM-DD'),
+                      date:responseValidate.date,
                       contract:contract ,
                       payment_invoices: [
                         {
@@ -96,13 +98,27 @@ const MethodTrf = () => {
                   ],
                 }
                 try {
-                    console.log('====================================');
-                    console.log(formPay);
-                    console.log('====================================');
+                   
                     const payment = await paymentInvoice(formPay)
-                    setNotificationType('success');
-                    setShowLoading(false);
-                    setShowNotification(true);
+                    const dataUser = await getData('user');
+                    const trf = {
+                        "sender": data.accountNumber,
+                        "name": data.alias,
+                        "email": null,
+                        "method": 4,
+                        "client": dataUser.client.id,
+                    };
+                    try {
+                        const response = await saveMethods(trf);
+                        setNotificationType('success');
+                        setShowLoading(false);
+                        setShowNotification(true);
+                    } catch (error) {
+                        setNotificationType('success');
+                        setShowLoading(false);
+                        setShowNotification(true);
+                    }
+                  
                 } catch (error:any) {
                     console.log(error.data[0].message);
                     setNotificationType('error');
@@ -183,13 +199,13 @@ const MethodTrf = () => {
                 </View>
                 <View style={styles.formUsuario}>
                     <View style={styles.registrarDatos}>
-                        {/* <View style={styles.iconosSelectParent}>
+                        <View style={styles.iconosSelectParent}>
                             <CheckBox
                                 value={showAlias}
                                 onValueChange={setShowAlias}
                             />
                             <Text style={[styles.registrarDatosDe, styles.textTypo]}>Registrar datos de pago</Text>
-                        </View> */}
+                        </View>
                         {showAlias && (
                             <View style={styles.formUsuario}>
                                 <Controller
@@ -208,6 +224,9 @@ const MethodTrf = () => {
                                         </View>
                                     )}
                                 />
+                                         {errors.alias && (
+                            <Text style={styles.errorText}>{(errors.alias as any).message}</Text>
+                        )}
                             </View>
                         )}
                     </View>

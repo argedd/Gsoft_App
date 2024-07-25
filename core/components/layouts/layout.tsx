@@ -8,7 +8,7 @@ const Layout = (props: any) => {
       			
                   {props.children}
 			<View style={styles.rectangleView}>
-			<Text style={styles.gNetworkAppVersin}>G-network app versión 0.01</Text>
+			<Text style={styles.gNetworkAppVersin}>G-network app versión 1.0.0</Text>
 			</View>
     		</View>);
 };
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
 		alignItems:'center'
 		},
 		gNetworkAppVersin: {
+			marginTop:3,
 			fontSize: 10,
 			fontFamily: "Roboto-Regular",
 			color: "#fafafa",

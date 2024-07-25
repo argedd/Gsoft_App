@@ -58,6 +58,14 @@ const setClient = async (id:number,body:any): Promise<any> => {
 
 };
 
+
+const sendToken = async (body:any): Promise<any> => {
+
+  const response = await api.post<any>(`/clients/firebase_token/`,body);
+  return response.data; // Devuelve solo los datos de la respuesta
+
+};
+
 export{
   getContracts,
   getContractDetail,
@@ -65,4 +73,5 @@ export{
   setPassword,
   getClient,
   setClient,
+  sendToken,
 }
