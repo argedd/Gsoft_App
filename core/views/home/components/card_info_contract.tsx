@@ -24,6 +24,8 @@ const getStatusImage = (status: number) => {
       return require("../../../assets/icons/status/pausado.png");
     case 35:
       return require("../../../assets/icons/status/retirado.png");
+    case 34:
+      return require("../../../assets/icons/status/suspendido.png");
     // Agrega más casos según los estados que manejes
   }
 };
@@ -56,7 +58,7 @@ const CardInfo: React.FC<CardInfoProps> = ({ data }) => {
           </View>
           <View style={styles.gridItem}>
             <Text style={[styles.nContrato, styles.nContratoTypo]}>Fecha de pago:</Text>
-            <Text style={[styles.text, styles.textTypo]}>{data.date_cicle}</Text>
+            <Text style={[styles.text, styles.textTypo]}>{data.invoice_date_cicle}</Text>
           </View>
           <View style={[styles.gridItem, styles.gridItemFlexBox]}>
             <MaterialCommunityIcons name='file-search-outline' size={24} color="#fff" />

@@ -3,11 +3,15 @@ import { Text, StyleSheet, View, TouchableOpacity, FlatList, Image, GestureRespo
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ResultInvoices } from "../../../data/interfaces/invoices_interface";
 import { getInvoice } from "../../../services/facturacion/facturas_service";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setInvoice } from "../../../utils/redux/actions/invoiceActions";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamListRoute } from "../../../navigations/routes/app_routes";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { RootState } from "../../../utils/redux/store";
+import { useState } from "react";
+import { SuccesComponent, ErrorComponent } from "../../../components/components";
+import DialogNotificationComponent from "../../../components/dialogs/dialogNotification";
 
 interface Props {
   invoices: ResultInvoices[];
@@ -20,7 +24,10 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
 
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp>(); // Use the correct type here
-
+  const contract = useSelector((state: RootState) => state.contractState);
+  const [message, setMessage] = useState('');
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationType, setNotificationType] = useState<null | 'success' | 'error'>(null);
   const handleDescargar = async (url:string) => {
 
     if(url!=null){
@@ -36,11 +43,28 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
 
   };
 
+  const handleError = async (invoice:any) => {
+    
+    console.log('====================================');
+    console.log(invoice.status);
+    console.log('====================================');
+    if(invoice.status === 24){
+       setMessage("Error, esta factura esta anulada");
+    setShowNotification(true);
+    setNotificationType('error')
+ 
+   }else{
+     setMessage("Error, no posee banco asociado");
+    setShowNotification(true);
+    setNotificationType('error')
+   }
+  }
+
   const renderInvoiceItem = ({ item }: { item: ResultInvoices }) => (
     
     <TouchableOpacity style={styles.frameFlexBox} onPress={()=>item.status ==22  ? handleDescargar(item.url):
-      ( item.status == 23 ?
-      handlePay( item.id):('')
+      ( item.status == 23 && contract.data.order_status_id !=41 ?
+      handlePay( item.id):handleError(item)
       )}
     >
 
@@ -59,6 +83,9 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
           ) : <MaterialCommunityIcons name="check-circle" size={22} color="#fff" /> )}
 
       </View>
+      <DialogNotificationComponent visible={showNotification} onClose={() => setShowNotification(false)}>
+        {notificationType === 'error' && <ErrorComponent onClose={() => setShowNotification(false)} message={message} />}
+      </DialogNotificationComponent>
     </TouchableOpacity>
   );
 
@@ -101,12 +128,35 @@ const ListInvoices: React.FC<Props> = ({ invoices }) => {
   const invoiceCycles = Object.keys(groupedInvoices).reverse();
 
   return (
-    <FlatList
-      data={invoiceCycles}
-      renderItem={({ item }) => renderInvoiceCicle(item)}
-      keyExtractor={(item) => item}
-      contentContainerStyle={styles.container}
-    />
+    
+    <View style={styles.container}>
+    {contract.data != null && contract.data.status === 35 ? (
+      <View>
+      <Text style={styles.yearText}>Tu contrato ha sido Retirado, favor contacte a nuestro equipo de soporte.</Text>
+       <TouchableOpacity style={styles.itemContainer} onPress={() =>
+           Linking.openURL(
+               `https://wa.me/+584124630302`
+           )
+       }>
+           <View style={styles.titleMenu}>
+               <Image source={require("../../../assets/icons/asistencia/ejecutivo.png")} style={styles.icon} resizeMode="contain" />
+               <Text style={styles.itemText}>Chatear con soporte tecnico</Text>
+           </View>
+           <View>
+               <MaterialCommunityIcons name="chevron-right" size={24} color="#fff" />
+           </View>
+       </TouchableOpacity>
+       </View>
+
+    ) : (
+      <FlatList
+        data={invoiceCycles}
+        renderItem={({ item }) => renderInvoiceCicle(item)}
+        keyExtractor={(item) => item.toString()}
+        contentContainerStyle={styles.container}
+      />
+    )}
+  </View>
   );
 };
 
@@ -177,8 +227,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Centra los contenidos del padre
   },
   container: {
-    paddingBottom: 20,
-    paddingTop: 10
+    marginBottom: 20,
   },
   yearText: {
     fontSize: 18,
@@ -194,6 +243,22 @@ const styles = StyleSheet.create({
     height: 28,
     tintColor: '#fff', // Si deseas cambiar el color de la imagen
   },
+  itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+},
+itemText: {
+    fontSize: 16,
+    paddingLeft: 12,
+    color: "#fff"
+},
+titleMenu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+},
+
 });
 
 export default ListInvoices;

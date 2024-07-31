@@ -45,6 +45,7 @@ const FacturacionView = ({ navigation }:Props) => {
   const FacturacionComponent =() =>(
     <View style={styles.container}>
     <BackButton title={'Facturacion'} />
+    
     <ListInvoices invoices={invoices}/>
   
     </View>
@@ -61,7 +62,7 @@ const FacturacionView = ({ navigation }:Props) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      // marginTop: 50,
+      marginBottom: 50,
     },
 
     

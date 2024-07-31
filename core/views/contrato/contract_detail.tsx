@@ -53,7 +53,7 @@ const getStatusImage = (status: number) => {
                     </View>
                     <View style={styles.nOrdenParent}>
                       <Text style={styles.mbps30Typo}>Nº orden:</Text>
-                      <Text style={[styles.text, styles.textTypo]}>{data.order_id}</Text>
+                      <Text style={[styles.text, styles.textTypo]}>{data.installation_order}</Text>
                     </View>
                   </View>
                   <View style={styles.frameParent2}>

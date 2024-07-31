@@ -209,7 +209,7 @@ const LoginComponent: React.FC<Props> = ({ navigation }) => {
                       placeholder="*******"
                       placeholderTextColor="#fff"
                       keyboardType="numeric"
-                      maxLength={8}
+                      maxLength={10}
                       onChange={(text) => setCredentials((prevState) => ({ ...prevState, identification: `${digit}${text}` }))}
 
                     />

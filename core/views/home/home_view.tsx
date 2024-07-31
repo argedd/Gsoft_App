@@ -1,18 +1,19 @@
 // App.js
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, Alert, Text } from 'react-native';
+import { View, FlatList, StyleSheet, Alert, Text, TouchableOpacity } from 'react-native';
 import MenuItem from '../../components/list/listMenuItem';
 import menuItems, { IMenuItem } from '../../data/homeMenuItems';
 import HeaderHome from './components/header_home';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamListRoute } from '../../navigations/routes/app_routes';
-import { FloatingActionButton } from '../../components/components';
+import { DialogComponent, FloatingActionButton } from '../../components/components';
 import LayoutPrimary from '../../components/layouts/layout_primary';
 import Carousel from './components/carousel';
 import { getData } from '../../utils/asyncStorage/asyncStorage';
 import { getContracts, sendToken } from '../../services/clients/clients_service';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { percentHeight, percentWidth } from '../../utils/dimensions/dimensions';
 
 type HomeViewProp = StackNavigationProp<RootStackParamListRoute>;
 
@@ -23,11 +24,17 @@ interface Props {
 
 const HomeView: React.FC<Props> = ({navigation}) => {
   const [contracts, setContracts] = useState([]);
+  const [notification, setNotification] = useState<any>('');
+  const [title, setTitle] = useState<any>();
+  const [showDialog, setShowDialog] = useState(false);
+
   useEffect(() => {
     requestUserPermission();
     getToken();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      setShowDialog(true);
+      setNotification(remoteMessage.notification?.body);
+      setTitle(remoteMessage.notification?.title);
     });
 
     return unsubscribe;
@@ -53,9 +60,7 @@ const HomeView: React.FC<Props> = ({navigation}) => {
     }
 
     const send =  await sendToken(form);
-    console.log('====================================');
-    console.log(send);
-    console.log('====================================');
+
     await AsyncStorage.setItem('fcmToken', token);
     // O envíalo directamente a tu servidor
   }
@@ -99,6 +104,19 @@ const HomeView: React.FC<Props> = ({navigation}) => {
         icon={require('../../assets/icons/home/asistencia.png')}
         onPress={handleFabPress}
       /> 
+        <DialogComponent visible={showDialog} onClose={() => setShowDialog(false)}>
+          <Text style={styles.title}>
+            {title}
+          </Text>
+          <Text style={styles.textNotification}>
+            {notification}
+          </Text>
+          <View style={styles.botonesBotnPrincipalParent}>
+                <TouchableOpacity style={[styles.botonesBotnPrincipal, styles.botonesFlexBox]} onPress={() => setShowDialog(false)}>
+                    <Text style={[styles.iniciarSesin, styles.iniciarSesinTypo]}>Cerrar</Text>
+                </TouchableOpacity>
+            </View>
+      </DialogComponent>
           </View>
 
   );
@@ -117,6 +135,45 @@ const styles = StyleSheet.create({
     flex: 1,
     // marginTop: 50,
   },
+  title: {
+    textAlign: "center",
+    color: "#fff",
+    fontFamily: "Roboto-Regular",
+    fontSize: 20
+},
+  textNotification: {
+    textAlign: "left",
+    color: "#fff",
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    marginTop:16
+},
+  botonesBotnPrincipalParent: {
+    marginTop: percentHeight(2),
+    alignSelf: "stretch",
+    alignItems: "center"
+},
+iniciarSesin: {
+    fontWeight: "600",
+    fontFamily: "Inter-SemiBold",
+    color: "#fafafa"
+},
+botonesBotnPrincipal: {
+    backgroundColor: "#e20a17"
+},
+iniciarSesinTypo: {
+    textAlign: "left",
+    fontSize: 16
+},
+botonesFlexBox: {
+    paddingHorizontal: percentWidth(8),
+    justifyContent: "center",
+    paddingVertical: percentHeight(1.5),
+    borderRadius: 8,
+    flexDirection: "row",
+    alignSelf: "stretch",
+    alignItems: "center"
+},
 });
 
 export default HomeView;

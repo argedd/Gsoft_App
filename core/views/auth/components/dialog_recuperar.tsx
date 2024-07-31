@@ -51,9 +51,7 @@ const DialogRecuperar: React.FC<DialogRecuperarProps> = ({ onClose }) => {
       setShowNotification(true);
       dispatch(resetForm());
       setNotificationType('success');
-      console.log('====================================');
-      console.log(response);
-      console.log('====================================');
+
     } catch (error) {
       setShowLoading(false);
     }
@@ -78,9 +76,9 @@ const DialogRecuperar: React.FC<DialogRecuperarProps> = ({ onClose }) => {
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={digit}
-                        placeholder="0412"
+                        placeholder="V"
                         placeholderTextColor="#fff"
-                        maxLength={4}
+                        maxLength={2}
                         selectionColor="red"
                         editable={false}
                       />
